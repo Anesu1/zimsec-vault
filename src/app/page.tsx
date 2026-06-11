@@ -1694,7 +1694,7 @@ export default function Home() {
                     <p className={`text-3xl font-light mt-1 ${!examReport.cheated ? "text-emerald-400" : "text-rose-400"}`}>
                       {!examReport.cheated ? "PASSED" : "FAILED"}
                     </p>
-                    <span className="text-[10px] text-white/30 mt-1 block">{violations} Cheat Alerts triggered</span>
+                    <span className="text-[10px] text-white/30 mt-1 block">{violations} Cheat {violations === 1 ? "Alert" : "Alerts"} triggered</span>
                   </div>
 
                   <div className="bg-white/5 border border-white/10 p-4 rounded-lg text-center">

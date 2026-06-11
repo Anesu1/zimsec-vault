@@ -10,6 +10,7 @@
 
 import type * as materials from "../materials.js";
 import type * as quests from "../quests.js";
+import type * as rateLimit from "../rateLimit.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   materials: typeof materials;
   quests: typeof quests;
+  rateLimit: typeof rateLimit;
   users: typeof users;
 }>;
 

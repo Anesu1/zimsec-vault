@@ -1,7 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../../../convex/_generated/api";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null;
+
+// Validate the caller against a live Convex session. Returns the userId on
+// success, or null if the token is missing/expired/invalid.
+async function authenticate(token: string | null): Promise<string | null> {
+  if (!token || !convex) return null;
+  try {
+    const session = await convex.query(api.users.getSession, { token });
+    return session?.userId ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Durable rate limit (per session token) — 20 generations/minute — backed by
+// Convex so it holds across serverless instances. Fails open if Convex is
+// unreachable: the session-token gate above still requires a valid account.
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60_000;
+async function rateLimited(key: string): Promise<boolean> {
+  if (!convex) return false;
+  try {
+    const { limited } = await convex.mutation(api.rateLimit.check, {
+      key,
+      limit: RATE_LIMIT,
+      windowMs: RATE_WINDOW_MS,
+    });
+    return limited;
+  } catch {
+    return false;
+  }
+}
 
 const ALLOWED_SUBJECTS = [
   "Mathematics",
@@ -16,10 +52,18 @@ const ALLOWED_MODES = ["flashcards", "quiz", "socratic", "homework_helper"] as c
 type Mode = (typeof ALLOWED_MODES)[number];
 
 export async function POST(req: NextRequest) {
-  // Soft auth: log warning in dev, block in production if token missing
+  // Require a valid Convex session token. A dev-only bypass keeps local
+  // testing working when Convex isn't reachable.
   const sessionToken = req.headers.get("x-session-token");
-  if (!sessionToken && process.env.NODE_ENV === "production") {
+  const isDev = process.env.NODE_ENV !== "production";
+  const userId = await authenticate(sessionToken);
+  const devBypass = isDev && sessionToken === "dev-token";
+  if (!userId && !devBypass) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (await rateLimited(userId ?? sessionToken ?? "anon")) {
+    return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
   }
 
   let body: Record<string, unknown>;

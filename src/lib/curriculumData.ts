@@ -33,6 +33,9 @@ Please see specific guides for Paper 1 and Paper 2 to prepare for your exams.
     readingMaterialPaper1: `
 ### ZIMSEC GRADE 7 MATHEMATICS: PAPER 1 (MULTIPLE CHOICE PREP)
 
+**Official exam format (7020/01)**: 40 multiple-choice questions, 2 hours, NO calculators. Answers are shaded on a separate answer sheet with an HB pencil.
+**ZIMSEC tip**: the exam often writes decimals with a comma — **0,7 means 0.7** and **$25,00 means $25.00**. Do not be confused by this.
+
 #### 1. Decimal Place Value & Core Operations
 In the decimal system, the value of a digit depends on its position. For example, in 45,678:
 - **4** is in the Ten Thousands place (40,000)
@@ -94,7 +97,25 @@ To find a percentage of an amount: convert to a fraction first. *Example*: 25% o
 #### 9. Data Handling (Averages)
 - **Mean (average)** = total of all values ÷ how many values there are.
 - *Example*: Scores 6, 8, 10 → mean = (6 + 8 + 10) ÷ 3 = 24 ÷ 3 = 8.
-- **Mode** = the value that appears most often. **Range** = biggest value − smallest value.
+- **Mode** = the value that appears most often. **Median** = the middle value when arranged in order. **Range** = biggest value − smallest value.
+
+#### 10. Rounding & Estimation (Common ZIMSEC Questions)
+- To round to the nearest hundred, look at the tens digit: 5 or more rounds UP. 4,567 → **4,600**.
+- Estimate before calculating: 198 + 305 ≈ 200 + 300 = **500**.
+- Order of operations (BODMAS): multiply/divide BEFORE add/subtract. 7 × 8 + 6 = 56 + 6 = **62**.
+
+#### 11. Unit Conversions (Learn These by Heart)
+- Length: 1 km = 1,000 m; 1 m = 100 cm. So 2 km = **2,000 m**.
+- Mass: 1 kg = 1,000 g. So 3.5 kg = **3,500 g**.
+- Capacity: 1 litre = 1,000 ml. So 2 litres = **2,000 ml**.
+- Time: 1 hour = 60 min, so half an hour = **30 minutes**. ZIMSEC also tests 24-hour time: 2:30 pm = **1430**.
+- Money: 100 cents = $1, so 3,007 cents = **$30.07**.
+
+#### 12. Square Numbers, Even/Odd & Discounts
+- A **square number** is a number times itself: 1, 4, 9, 16, 25... (9 = 3 × 3).
+- **Even** numbers end in 0, 2, 4, 6, 8; **odd** numbers end in 1, 3, 5, 7, 9.
+- **Discount**: 10% off $25.00 → discount = $2.50, so you pay 25.00 − 2.50 = **$22.50**.
+- Lines that never meet are **parallel**; lines meeting at 90° are **perpendicular**.
     `,
     readingMaterialPaper2: `
 ### ZIMSEC GRADE 7 MATHEMATICS: PAPER 2 (STRUCTURED & THEORY PREP)
@@ -245,6 +266,146 @@ Marks are awarded for each step, so even a wrong final answer earns method marks
         options: ["A. 1/4", "B. 2/3", "C. 3/4", "D. 7/5"],
         answer: "C",
         explanation: "0.75 = 75/100, which simplifies to 3/4."
+      },
+      {
+        id: "m13",
+        question: "Calculate: 234 × 6",
+        options: ["A. 1,404", "B. 1,304", "C. 1,444", "D. 1,204"],
+        answer: "A",
+        explanation: "234 × 6: 200×6=1,200, 30×6=180, 4×6=24. 1,200+180+24 = 1,404."
+      },
+      {
+        id: "m14",
+        question: "Calculate: 1,248 ÷ 8",
+        options: ["A. 146", "B. 156", "C. 166", "D. 126"],
+        answer: "B",
+        explanation: "1,248 ÷ 8 = 156. Check by multiplying back: 156 × 8 = 1,248."
+      },
+      {
+        id: "m15",
+        question: "Round 4,567 to the nearest hundred.",
+        options: ["A. 4,500", "B. 4,600", "C. 4,570", "D. 5,000"],
+        answer: "B",
+        explanation: "The tens digit is 6 (5 or more), so round up: 4,567 → 4,600."
+      },
+      {
+        id: "m16",
+        question: "In the number 45,678, the digit 5 stands for:",
+        options: ["A. 50", "B. 500", "C. 5,000", "D. 50,000"],
+        answer: "C",
+        explanation: "The 5 is in the thousands place, so it stands for 5,000."
+      },
+      {
+        id: "m17",
+        question: "Work out 7 × 8 + 6.",
+        options: ["A. 56", "B. 62", "C. 98", "D. 60"],
+        answer: "B",
+        explanation: "Multiply before adding (BODMAS): 7 × 8 = 56, then 56 + 6 = 62."
+      },
+      {
+        id: "m18",
+        question: "Calculate: 1/2 + 1/4",
+        options: ["A. 2/6", "B. 1/2", "C. 3/4", "D. 1/6"],
+        answer: "C",
+        explanation: "Make the denominators the same: 1/2 = 2/4, so 2/4 + 1/4 = 3/4."
+      },
+      {
+        id: "m19",
+        question: "Simplify 6/8 to its lowest terms.",
+        options: ["A. 2/4", "B. 3/4", "C. 4/6", "D. 1/2"],
+        answer: "B",
+        explanation: "Divide top and bottom by 2: 6 ÷ 2 = 3 and 8 ÷ 2 = 4, giving 3/4."
+      },
+      {
+        id: "m20",
+        question: "Calculate: 0.5 + 0.25",
+        options: ["A. 0.30", "B. 0.55", "C. 0.75", "D. 0.07"],
+        answer: "C",
+        explanation: "Line up the decimal points: 0.50 + 0.25 = 0.75."
+      },
+      {
+        id: "m21",
+        question: "Calculate: 3.6 × 10",
+        options: ["A. 0.36", "B. 36", "C. 360", "D. 3.60"],
+        answer: "B",
+        explanation: "Multiplying by 10 moves the decimal point one place right: 3.6 → 36."
+      },
+      {
+        id: "m22",
+        question: "Find 10% of 250.",
+        options: ["A. 2.5", "B. 25", "C. 250", "D. 20"],
+        answer: "B",
+        explanation: "10% = 1/10, and 250 ÷ 10 = 25."
+      },
+      {
+        id: "m23",
+        question: "Tendai pays for a $2.35 item with $5.00. How much change does he get?",
+        options: ["A. $2.65", "B. $3.35", "C. $2.75", "D. $2.35"],
+        answer: "A",
+        explanation: "$5.00 − $2.35 = $2.65. Line up the decimal points when subtracting money."
+      },
+      {
+        id: "m24",
+        question: "2 km = ____ m",
+        options: ["A. 200", "B. 2,000", "C. 20,000", "D. 20"],
+        answer: "B",
+        explanation: "1 km = 1,000 m, so 2 km = 2 × 1,000 = 2,000 m."
+      },
+      {
+        id: "m25",
+        question: "3.5 kg = ____ g",
+        options: ["A. 350", "B. 35,000", "C. 3,500", "D. 3,050"],
+        answer: "C",
+        explanation: "1 kg = 1,000 g, so 3.5 kg = 3.5 × 1,000 = 3,500 g."
+      },
+      {
+        id: "m26",
+        question: "Find the area of a rectangle 8 cm long and 5 cm wide.",
+        options: ["A. 13 cm²", "B. 26 cm²", "C. 40 cm²", "D. 45 cm²"],
+        answer: "C",
+        explanation: "Area = length × width = 8 × 5 = 40 cm²."
+      },
+      {
+        id: "m27",
+        question: "Two straight lines that never meet are said to be:",
+        options: ["A. perpendicular", "B. parallel", "C. curved", "D. equal"],
+        answer: "B",
+        explanation: "Parallel lines run side by side and never meet; perpendicular lines cross at 90°."
+      },
+      {
+        id: "m28",
+        question: "If x + 5 = 12, then x =",
+        options: ["A. 5", "B. 7", "C. 12", "D. 17"],
+        answer: "B",
+        explanation: "Subtract 5 from both sides: x = 12 − 5 = 7."
+      },
+      {
+        id: "m29",
+        question: "A farmer plants 8 rows of maize with 25 plants in each row. How many plants are there in total?",
+        options: ["A. 180", "B. 200", "C. 210", "D. 225"],
+        answer: "B",
+        explanation: "8 rows × 25 plants = 200 plants."
+      },
+      {
+        id: "m30",
+        question: "144 eggs are packed into trays that hold 12 eggs each. How many trays are needed?",
+        options: ["A. 10", "B. 11", "C. 12", "D. 14"],
+        answer: "C",
+        explanation: "144 ÷ 12 = 12 trays."
+      },
+      {
+        id: "m31",
+        question: "Which of the following is a square number?",
+        options: ["A. 3", "B. 5", "C. 9", "D. 12"],
+        answer: "C",
+        explanation: "9 = 3 × 3, a number multiplied by itself. (From the ZIMSEC specimen paper.)"
+      },
+      {
+        id: "m32",
+        question: "A pair of shoes is marked $25.00. If a 10% discount is offered for cash, the discount price is:",
+        options: ["A. $23.75", "B. $26.25", "C. $2.50", "D. $22.50"],
+        answer: "D",
+        explanation: "10% of $25.00 is $2.50. Discount price = $25.00 − $2.50 = $22.50."
       }
     ],
     paper2: [
@@ -265,8 +426,8 @@ Marks are awarded for each step, so even a wrong final answer earns method marks
       {
         id: "mp2_3",
         question: "Tendai and Sipho share $60 in the ratio 2:1. Show how much each person receives, with full working.",
-        sampleAnswer: "Total parts = 2 + 1 = 3. One part = $60 ÷ 3 = $20. Tendai gets 2 × $20 = $40 and Sipho gets 1 × $20 = $20.",
-        keywords: ["3 parts", "20", "40", "ratio", "divide", "share"],
+        sampleAnswer: "Total parts = 2 + 1 = 3 parts. Divide to share: one part = $60 ÷ 3 = $20. Tendai gets 2 × $20 = $40 and Sipho gets 1 × $20 = $20.",
+        keywords: ["parts", "3", "20", "40", "divide"],
         explanation: "Add the ratio parts (3), divide the total by 3 to get $20 per part, then multiply each person's parts."
       },
       {
@@ -293,6 +454,8 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
     `,
     readingMaterialPaper1: `
 ### ZIMSEC GRADE 7 AGRICULTURE, SCIENCE & TECHNOLOGY: PAPER 1 (MULTIPLE CHOICE PREP)
+
+**Official exam format (703/1)**: multiple choice, 1 hour 45 minutes. Paper 2 (703/2) is structured with sections A-D.
 
 #### 1. Soil Science & Nutrients
 - **Soil Types**: Sand (large particles, poor water holding capacity), Clay (fine particles, high water retention, poor drainage), Silt (medium particles), and Loam (ideal mixture of sand, clay, and organic matter — the best soil for most crops).
@@ -331,6 +494,12 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
 - **Hardware** is the physical parts of a computer (keyboard, monitor, mouse); **software** is the programs.
 - Input devices: keyboard, mouse, scanner. Output devices: monitor, printer, speakers.
 - ICT in farming: weather forecasts, market prices via mobile phones, and record keeping.
+
+#### 8. Water & Farming Systems (Syllabus Topics)
+- **Natural water sources**: rivers, springs, rain, lakes. **Man-made sources**: dams, wells, boreholes, tanks.
+- Conserve water by mulching, drip irrigation, fixing leaks, and harvesting rainwater.
+- **Mixed farming** = growing crops AND keeping livestock on the same farm. Advantages: manure from animals fertilises crops, crop residues feed animals, and income comes from two sources.
+- **Careers in agriculture**: farmer, agronomist, veterinary surgeon, agricultural engineer, extension officer.
     `,
     readingMaterialPaper2: `
 ### ZIMSEC GRADE 7 AGRICULTURE, SCIENCE & TECHNOLOGY: PAPER 2 (STRUCTURED PREP)
@@ -469,6 +638,20 @@ To prove seeds need water to germinate:
         options: ["A. Coal power", "B. Hydro-electric power", "C. Solar power", "D. Wind power"],
         answer: "B",
         explanation: "Kariba uses the force of falling water from the dam to turn turbines — hydro-electric power."
+      },
+      {
+        id: "s13",
+        question: "Which of the following is a MAN-MADE source of water?",
+        options: ["A. A river", "B. A spring", "C. A borehole", "D. Rain"],
+        answer: "C",
+        explanation: "Boreholes, wells, dams and tanks are man-made; rivers, springs and rain are natural sources."
+      },
+      {
+        id: "s14",
+        question: "Growing crops AND keeping livestock on the same farm is called:",
+        options: ["A. Monoculture", "B. Mixed farming", "C. Market gardening", "D. Shifting cultivation"],
+        answer: "B",
+        explanation: "Mixed farming combines crops and livestock — manure fertilises the crops and crop residues feed the animals."
       }
     ],
     paper2: [
@@ -518,6 +701,8 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
     readingMaterialPaper1: `
 ### ZIMSEC GRADE 7 ENGLISH LANGUAGE: PAPER 1 (MULTIPLE CHOICE PREP)
 
+**Official exam format (7010/01)**: multiple choice, 1 hour 30 minutes — comprehension passages, vocabulary and grammar.
+
 #### 1. Parts of Speech & Grammar
 - **Pronouns**: Words that replace nouns to avoid repetition. Singular subject pronouns are I, you, he, she, it. Plural subject pronouns are we, they. Object pronouns are me, him, her, us, them.
 - **Subject-Verb Agreement**: Singular subjects take singular verbs, and plural subjects take plural verbs. E.g., "The boy plays soccer," but "The boys play soccer."
@@ -554,7 +739,9 @@ Prepositions show position or relationship: in, on, at, under, between, among, b
 - For vocabulary questions ("What does X mean as used in the passage?"), replace the word with each option and see which keeps the sentence's meaning.
     `,
     readingMaterialPaper2: `
-### ZIMSEC GRADE 7 ENGLISH LANGUAGE: PAPER 2 (STRUCTURED & COMPOSITION PREP)
+### ZIMSEC GRADE 7 ENGLISH LANGUAGE: PAPER 2 (WRITTEN PREP)
+
+**Official exam format (7010/02)**: written paper, 1 hour 45 minutes. Section A: Composition [20 marks] — choose ONE of two topics, write **80 to 120 words** using the guiding notes given. Section B: Comprehension — answer in FULL sentences with correct punctuation. Spend about 1 hour on the composition and 30 minutes on comprehension.
 
 #### 1. Direct & Indirect Speech
 - **Direct Speech**: Quoting the exact words spoken, enclosed in quotation marks. E.g., She said, "We are studying."
@@ -716,6 +903,13 @@ Markers reward: paragraphing, varied sentence openings, correct tenses kept cons
         sampleAnswer: "My uncle visited Harare, Bulawayo and Mutare last December.",
         keywords: ["My", "Harare", "Bulawayo", "Mutare", "December", "comma", "full stop"],
         explanation: "Capital letters for the start of the sentence, place names and the month; commas between list items; a full stop at the end."
+      },
+      {
+        id: "ep2_6",
+        question: "GUIDED COMPOSITION (specimen style): You have been selected as the Head Boy or Head Girl of your school. Write the acceptance speech you would give at assembly, between 80 and 120 words. Use these notes: thank the teachers and learners for trusting you; promise to maintain discipline; lead by example; work as a team with the prefects; ask for everyone's co-operation.",
+        sampleAnswer: "Good morning teachers and fellow learners. I would like to thank you all for trusting me with this important position. I promise to maintain discipline in our school and to lead by example in everything I do. I will work hand in hand with the prefects as a team so that our school runs smoothly. I kindly ask for co-operation from every learner and teacher. Together we can make our school the best in the district. Thank you.",
+        keywords: ["thank", "discipline", "example", "team", "prefects", "co-operation", "cooperation"],
+        explanation: "A full-mark answer covers ALL the given notes, stays within 80-120 words, opens with a greeting, and closes politely. This is the exact task style from ZIMSEC Paper 2 Section A."
       }
     ]
   },
@@ -727,6 +921,8 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
     `,
     readingMaterialPaper1: `
 ### ZIMSEC GRADE 7 SOCIAL SCIENCE: PAPER 1 (MULTIPLE CHOICE PREP)
+
+**Official exam format (7050/1)**: 40 multiple-choice questions, 1 hour 45 minutes. The real paper mixes history, geography, citizenship, family/community life, culture and health — including picture-based questions (e.g. identifying customs, ceremonies and instruments from photographs).
 
 #### 1. Pre-Colonial Empires of Zimbabwe
 - **Great Zimbabwe**: A powerful Shona (Karanga) pre-colonial kingdom known for its magnificent dry-stone walls built without mortar. It was a trade centre dealing in gold, ivory, and cattle, trading with Swahili and Portuguese merchants on the Indian Ocean coast.
@@ -755,7 +951,14 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
 - Tourism sites: Victoria Falls (Mosi-oa-Tunya), Great Zimbabwe ruins, Hwange National Park, Matobo Hills.
 - Conservation: resources must be used sustainably so future generations also benefit.
 
-#### 6. International Cooperation
+#### 6. Family, Community & Culture (Heavily Tested!)
+The specimen paper opens with family and community questions:
+- **Family types**: nuclear (parents + children), extended (includes grandparents, aunts, cousins), **polygamous** (a man with more than one wife), **monogamous** (one husband, one wife), single-parent and **child-headed** families.
+- **Respect customs (inhlonipho/kuremekedza)**: kneeling or bowing when greeting elders, greeting first, helping elders carry loads.
+- **Culture**: the **drum (ingoma/ngoma)** is the indigenous instrument used at ceremonies; traditional ceremonial drinks are prepared from **sorghum** (soaked, germinated, dried, mixed and fermented).
+- **Health basics** also appear: brush teeth regularly for strong healthy teeth; wash hands to prevent disease.
+
+#### 7. International Cooperation
 - **SADC**: Southern African Development Community — coordinates trade, peace, and economic cooperation among Southern African countries.
 - **African Union (AU)**: unites all African countries for peace and development.
 - **United Nations (UN)**: world body that promotes peace, human rights and development.
@@ -891,6 +1094,27 @@ Possible reasons historians give:
         options: ["A. 8", "B. 9", "C. 10", "D. 12"],
         answer: "C",
         explanation: "Zimbabwe is divided into 10 provinces, including Harare and Bulawayo metropolitan provinces."
+      },
+      {
+        id: "ss13",
+        question: "A family with more than one wife is called a:",
+        options: ["A. nuclear family", "B. polygamous family", "C. child-headed family", "D. monogamous family"],
+        answer: "B",
+        explanation: "Polygamous = a man married to more than one wife; monogamous = one husband and one wife. (Question style from the ZIMSEC specimen paper.)"
+      },
+      {
+        id: "ss14",
+        question: "Which relationship represents a member of the EXTENDED family?",
+        options: ["A. grandmother", "B. mother", "C. father", "D. brother"],
+        answer: "A",
+        explanation: "Mother, father and brother belong to the nuclear family; a grandmother belongs to the extended family. (From the ZIMSEC specimen paper.)"
+      },
+      {
+        id: "ss15",
+        question: "In Zimbabwe, which indigenous instrument is used during traditional ceremonies?",
+        options: ["A. flute", "B. guitar", "C. drum", "D. piano"],
+        answer: "C",
+        explanation: "The drum (ingoma/ngoma) is the indigenous instrument that leads traditional ceremonies. (From the ZIMSEC specimen paper.)"
       }
     ],
     paper2: [
@@ -938,177 +1162,227 @@ Possible reasons historians give:
 Bona izihloko zePaper 1 lePaper 2 ukuze ulungiselele imihloliso.
     `,
     readingMaterialPaper1: `
-### ISINDEBELE GRADE 7: PAPER 1 (UKUHLELWA KOLIMI)
+### ISINDEBELE GRADE 7: IPHEPHA 1 (7060/1)
 
-#### 1. Izaga (Proverbs)
-Izaga zinhlamvu zenhlakanipho yabadala. Funda lezi:
-- *"Inja yomoya ayibambi."* — Umuntu oguquguqukayo kazuzi lutho (a person who lacks focus will not succeed).
-- *"Isikhuni sibuya lomlotha."* — Okubi okwenzileyo kuzabuyela kuwe (your bad deeds come back to you).
-- *"Indlela ibuzwa kwabaphambili."* — Ulwazi luvela kwabadala / kwabahambileyo (ask those who have gone before; learn from elders).
-- *"Inkunzi isematholeni."* — Abakhokheli bakusasa ngabantwana balamuhla (future leaders are today's children).
-- *"Akusoka lingelasici."* — Kakho umuntu opheleleyo (no one is perfect).
-- *"Umntwana ongakhaliyo ufela embelekweni."* — Ongacelisiyo / ongakhulumiyo kazuzi sizo (speak up to get help).
+**Official exam format**: Iphepha 1 liqala ngendatshana yokuzwisisa (a comprehension passage) elandelwa yimibuzo yokukhetha (multiple choice), 1 hour 30 minutes. Bala indatshana KABILI ungakaphenduli — read the passage TWICE before answering. Impendulo zitholakala endatshaneni (the answers are found in the passage).
 
-#### 2. Izitsho (Idioms)
-- *Ukuthwala ilanga* — ukulinda isikhathi eside (to wait a long time).
-- *Ukubamba inhliziyo* — ukubekezela (to be patient / endure).
-- *Ukudla imali* — ukuchitha imali (to spend money wastefully).
+#### 1. Ukufunda Lokuqedisisa (Comprehension Practice)
+Bala le ndatshana (read this practice passage, written in the style of the real exam):
 
-#### 3. Uhlelo: Izigaba Zamabizo (Noun Classes) & Izivumelwano (Concords)
-- **Isigaba 1 (um-/aba-)**: umfana → abafana; umuntu → abantu. Isivumelwano: **u-** / **ba-**
-  (Umfana **u**gijima. Abafana **ba**gijima.)
-- **Isigaba 3 (um-/imi-)**: umuthi → imithi; umfula → imifula. Isivumelwano: **u-** / **i-**
-- **Isigaba 5 (i-/ama-)**: ilizwe → amazwe; ibhuku → amabhuku. Isivumelwano: **li-** / **a-**
-- **Isigaba 7 (isi-/izi-)**: isihlahla → izihlahla; isikolo → izikolo. Isivumelwano: **si-** / **zi-**
-- **Isigaba 9 (in-/izin-)**: inja → izinja; inkomo → izinkomo. Isivumelwano: **i-** / **zi-**
+*Izihlahla ziqakathekile kakhulu empilweni yabantu lezinyamazana. Izinyanga zesiNtu zisebenzisa izimpande, amaxolo kanye lamahlamvu ukulungisa imithi yelapha imikhuhlane. Izihlahla zisipha umoya omuhle esiwuphefumulayo, ziyikudla kwabantu lezinyamazana, njalo izinyoni zakhela izidleke zazo kuzo. Kufanele sihlanyele izihlahla ezintsha ukubuyisela lezo eziganyuliweyo.*
 
-#### 4. Ukubingelela (Greetings) & Inhlonipho (Respect)
-- Ekuseni: *Livukile?* / Emini: *Litshonile?* / Kumuntu omdala sithi **Salibonani** hatshi "Sawubona".
-- Inhlonipho: ukukhuluma kuhle labadala, ukubingelela, lokusebenzisa ubuningi (plural) nxa ukhuluma lomuntu omdala.
+**English summary (to help you understand)**: Trees are very important to people and animals. Traditional healers use roots, bark and leaves to make medicine that cures diseases. Trees give us clean air to breathe, provide food for people and animals, and birds build their nests in them. We must plant new trees to replace those that have been cut down.
 
-#### 5. Imisindo Lemibhalo (Spelling & Sounds)
-- Hlola ama-click: **c** (njengaku "cela"), **q** (njengaku "qela"), **x** (njengaku "xoxa").
-- Amabala ahlanganisiweyo: *ngi-*, *si-*, *ba-* ahlala ehambisana lesenzo (ngiyafunda, siyafunda, bayafunda).
+**Amabala aqakathekileyo (key vocabulary)**: izimpande = roots | amaxolo = bark | amahlamvu = leaves | imikhuhlane = diseases | izidleke = nests | ukuhlanyela = to plant | ukuganyulwa = to be cut down | izinyanga = traditional healers | imvelo = nature/environment
+
+#### 2. Izaga (Proverbs)
+Izaga zinhlamvu zenhlakanipho yabadala — proverbs carry the wisdom of the elders. Funda lezi (learn these):
+- *"Inja yomoya ayibambi."* (literally: "a dog of the wind catches nothing")
+  — Umuntu oguquguqukayo kazuzi lutho. **English**: A person who lacks focus and keeps changing direction will not succeed.
+- *"Isikhuni sibuya lomlotha."* (literally: "the firebrand comes back with ashes")
+  — Okubi okwenzileyo kuzabuyela kuwe. **English**: Your bad deeds will come back to you.
+- *"Indlela ibuzwa kwabaphambili."* (literally: "the way is asked from those ahead")
+  — Ulwazi luvela kwabadala. **English**: Ask those with experience; learn from your elders.
+- *"Inkunzi isematholeni."* (literally: "the bull is among the calves")
+  — Abakhokheli bakusasa ngabantwana balamuhla. **English**: Future leaders are today's children.
+- *"Akusoka lingelasici."* (literally: "there is no bachelor without a flaw")
+  — Kakho umuntu opheleleyo. **English**: Nobody is perfect.
+- *"Umntwana ongakhaliyo ufela embelekweni."* (literally: "the child who does not cry dies on its mother's back")
+  — Ongakhulumiyo kazuzi sizo. **English**: If you do not speak up and ask, you will not get help.
+
+#### 3. Izitsho (Idioms)
+- *Ukuthwala ilanga* (literally: "to carry the sun") — ukulinda isikhathi eside. **English**: to wait a very long time.
+- *Ukubamba inhliziyo* (literally: "to hold the heart") — ukubekezela. **English**: to be patient / to endure.
+- *Ukudla imali* (literally: "to eat money") — ukuchitha imali. **English**: to spend money wastefully.
+
+#### 4. Uhlelo: Izigaba Zamabizo (Noun Classes) & Izivumelwano (Subject Concords)
+Each noun class has its own prefix and matching verb concord — like "he runs / they run" in English:
+- **Isigaba 1 (um-/aba-)**: umfana (boy) → abafana (boys); umuntu (person) → abantu (people). Isivumelwano: **u-** / **ba-**
+  (Umfana **u**gijima = The boy runs. Abafana **ba**gijima = The boys run.)
+- **Isigaba 3 (um-/imi-)**: umuthi (tree/medicine) → imithi; umfula (river) → imifula. Isivumelwano: **u-** / **i-**
+- **Isigaba 5 (i-/ama-)**: ilizwe (country) → amazwe; ibhuku (book) → amabhuku. Isivumelwano: **li-** / **a-**
+- **Isigaba 7 (isi-/izi-)**: isihlahla (tree/bush) → izihlahla; isikolo (school) → izikolo. Isivumelwano: **si-** / **zi-**
+- **Isigaba 9 (in-/izin-)**: inja (dog) → izinja; inkomo (cow) → izinkomo. Isivumelwano: **i-** / **zi-**
+
+#### 5. Ukubingelela (Greetings) & Inhlonipho (Respect)
+- Ekuseni (in the morning): *Livukile?* (Have you woken well?) / Emini (in the day): *Litshonile?* (Have you spent the day well?)
+- Kumuntu omdala sithi **Salibonani** (to an elder we say "Salibonani" — the respectful plural greeting), hatshi "Sawubona".
+- Inhlonipho (respect): speak politely to elders, greet first, and use the plural form (ubuningi) when addressing an older person.
+
+#### 6. Imisindo Lemibhalo (Spelling & Sounds)
+- Ama-click sounds: **c** (njengaku "cela" — to ask), **q** (njengaku "qela"), **x** (njengaku "xoxa" — to chat).
+- Subject prefixes attach to the verb: *ngi-* (I), *si-* (we), *ba-* (they) — ngiyafunda (I am learning), siyafunda (we are learning), bayafunda (they are learning).
     `,
     readingMaterialPaper2: `
-### ISINDEBELE GRADE 7: PAPER 2 (IMIBUZO EMIDE)
+### ISINDEBELE GRADE 7: PAPER 2 (IMIBUZO EMIDE / STRUCTURED QUESTIONS)
 
 KuPaper 2 phendula ngemitsho egcweleyo, ubhale kuhle, uchaze ngokupheleleyo.
+(In Paper 2, answer in full sentences, write neatly, and explain completely.)
 
 #### 1. Ukuchaza Izaga (Explaining Proverbs)
-Nxa uchaza isaga:
-1. Bhala isaga ngokupheleleyo.
-2. Chaza umqondo waso ngamazwi akho (the deeper meaning, not the literal words).
-3. Nika isibonelo sempilo lapho isaga esisebenza khona.
-- *Isibonelo*: "Inja yomoya ayibambi" — umuntu ontshintshantshintsha imisebenzi noma izifundo kazukuphumelela; kufanele sigxile entweni eyodwa.
+Nxa uchaza isaga (when explaining a proverb):
+1. Bhala isaga ngokupheleleyo. (Write the proverb in full.)
+2. Chaza umqondo waso ngamazwi akho. (Explain its deeper meaning in your own words — not the literal words.)
+3. Nika isibonelo sempilo lapho isaga esisebenza khona. (Give a real-life example where the proverb applies.)
+- *Isibonelo (example)*: "Inja yomoya ayibambi" — umuntu ontshintshantshintsha imisebenzi noma izifundo kazukuphumelela; kufanele sigxile entweni eyodwa.
+  **English**: A person who keeps switching jobs or studies will not succeed; we must focus on one thing.
 
-#### 2. Ukubhala Indaba (Composition)
-- **Isingeniso**: yethula indaba ngendlela ekhangayo (umtsho ohlabayo).
-- **Umzimba**: izigaba ezi-2 kuze kube 3, isigaba ngasinye silombono owodwa omkhulu.
-- **Isiphetho**: phetha indaba — ungayitshiyi isalenga.
-- Sebenzisa izaga lezitsho ukucecisa indaba yakho — uthola amamaki amanengi.
+#### 2. Ukubhala Indaba (Composition Writing)
+- **Isingeniso (introduction)**: yethula indaba ngendlela ekhangayo — open with a sentence that grabs attention.
+- **Umzimba (body)**: izigaba ezi-2 kuze kube 3 — 2 to 3 paragraphs, each with ONE main idea.
+- **Isiphetho (conclusion)**: phetha indaba — finish the story properly; never leave it hanging.
+- Sebenzisa izaga lezitsho ukucecisa indaba yakho — decorate your composition with proverbs and idioms; markers reward this with high marks.
 
 #### 3. Ukubhala Incwadi (Letter Writing)
-- **Incwadi yobungane** (kumngane/isihlobo): ikheli lakho lodwa, ukubingelela okukhululekileyo (Mngane wami Sipho), lesiphetho esifudumeleyo (Owakho ozithobayo / Umngane wakho).
-- **Incwadi esemthethweni** (kumphathintsikolo): amakheli amabili, isihloko, ulimi oluhloniphayo, lesiphetho esisemthethweni.
+- **Incwadi yobungane (friendly/informal letter)** — to a friend or relative: ikheli lakho lodwa (your address only), ukubingelela okukhululekileyo (a relaxed greeting, e.g. "Mngane wami Sipho" — My friend Sipho), lesiphetho esifudumeleyo (a warm closing: "Owakho ozithobayo / Umngane wakho" — Yours humbly / Your friend).
+- **Incwadi esemthethweni (formal letter)** — to a headmaster or official: amakheli amabili (two addresses), isihloko (a subject line), ulimi oluhloniphayo (respectful language), lesiphetho esisemthethweni (a formal closing).
 
 #### 4. Izivumelwano Ezenzweni (Subject-Verb Agreement Practice)
-- Umfana **u**dlala ebaleni. → Abafana **ba**dlala ebaleni.
-- Isihlahla **si**khulile. → Izihlahla **zi**khulile.
-- Inkomo **i**sedlelweni. → Izinkomo **zi**sedlelweni.
-- Ilizwe **li**yathuthuka. → Amazwe **a**yathuthuka.
+Singular → plural; watch how the concord on the verb changes:
+- Umfana **u**dlala ebaleni. → Abafana **ba**dlala ebaleni. (The boy plays on the field → The boys play on the field.)
+- Isihlahla **si**khulile. → Izihlahla **zi**khulile. (The tree has grown → The trees have grown.)
+- Inkomo **i**sedlelweni. → Izinkomo **zi**sedlelweni. (The cow is in the pasture → The cows are in the pasture.)
+- Ilizwe **li**yathuthuka. → Amazwe **a**yathuthuka. (The country is developing → The countries are developing.)
 
 #### 5. Ubuningi (Plurals Practice)
-umfana → abafana | umuthi → imithi | ilizwe → amazwe | isikolo → izikolo | inja → izinja | uluthi → izinti
+umfana (boy) → abafana | umuthi (tree) → imithi | ilizwe (country) → amazwe | isikolo (school) → izikolo | inja (dog) → izinja | uluthi (stick) → izinti
     `,
     flashcards: [
-      { front: "Explain the proverb: 'Isaga sithi: Inja yomoya ayibambi.'", back: "It means a person who lacks focus or changes direction constantly will not succeed.", topic: "Izaga leZitsho" },
-      { front: "What is 'ukubingelela' in Ndebele?", back: "Greetings (e.g. Salibonani, Linjani).", topic: "Culture" },
-      { front: "Sitshoni isaga esithi 'Indlela ibuzwa kwabaphambili'?", back: "Ulwazi luvela kwabadala — ask those with experience; learn from elders.", topic: "Izaga leZitsho" },
-      { front: "Ubuningi bika 'umfana', 'isihlahla' le 'inja'?", back: "abafana, izihlahla, izinja.", topic: "Uhlelo" },
-      { front: "Sitshoni isitsho esithi 'ukubamba inhliziyo'?", back: "Ukubekezela — to be patient or endure hardship.", topic: "Izaga leZitsho" },
-      { front: "Sitshoni isaga esithi 'Inkunzi isematholeni'?", back: "Abakhokheli bakusasa ngabantwana balamuhla — future leaders are today's children.", topic: "Izaga leZitsho" },
+      { front: "Explain the proverb: 'Isaga sithi: Inja yomoya ayibambi.' (A dog of the wind catches nothing.)", back: "A person who lacks focus or changes direction constantly will not succeed. (Umuntu oguquguqukayo kazuzi lutho.)", topic: "Izaga leZitsho" },
+      { front: "What is 'ukubingelela' in Ndebele?", back: "Greetings — e.g. Salibonani (respectful hello), Linjani? (How are you?).", topic: "Culture" },
+      { front: "Sitshoni isaga esithi 'Indlela ibuzwa kwabaphambili'? (The way is asked from those ahead.)", back: "Ulwazi luvela kwabadala — ask those with experience; learn from elders.", topic: "Izaga leZitsho" },
+      { front: "Ubuningi bika 'umfana', 'isihlahla' le 'inja'? (Plural of boy, tree, dog?)", back: "abafana (boys), izihlahla (trees), izinja (dogs).", topic: "Uhlelo" },
+      { front: "Sitshoni isitsho esithi 'ukubamba inhliziyo'? (Idiom: to hold the heart.)", back: "Ukubekezela — to be patient or endure hardship.", topic: "Izaga leZitsho" },
+      { front: "Sitshoni isaga esithi 'Inkunzi isematholeni'? (The bull is among the calves.)", back: "Abakhokheli bakusasa ngabantwana balamuhla — future leaders are today's children.", topic: "Izaga leZitsho" },
     ],
     quiz: [
       {
         id: "nd1",
-        question: "Gwalisa isikhala: Umfana ___ enkundleni.",
+        question: "Gwalisa isikhala (Fill in the gap): Umfana ___ enkundleni. (The boy ___ on the playground.)",
         options: ["A. ugijima", "B. bagijima", "C. sigijima", "D. kugijima"],
         answer: "A",
-        explanation: "'Umfana' belongs to noun class 1, which uses the subject concord 'u-'."
+        explanation: "'Umfana' (boy) belongs to noun class 1, which uses the subject concord 'u-': Umfana ugijima = The boy runs."
       },
       {
         id: "nd2",
-        question: "Gwalisa isikhala: Abafana ___ enkundleni.",
+        question: "Gwalisa isikhala (Fill in the gap): Abafana ___ enkundleni. (The boys ___ on the playground.)",
         options: ["A. ugijima", "B. bagijima", "C. ligijima", "D. zigijima"],
         answer: "B",
-        explanation: "Ubuningi besigaba 1 (aba-) buthatha isivumelwano 'ba-': Abafana bagijima."
+        explanation: "The plural of class 1 (aba-) takes the concord 'ba-': Abafana bagijima = The boys run."
       },
       {
         id: "nd3",
-        question: "Ubuningi bebizo elithi 'isihlahla' ngu:",
+        question: "Ubuningi bebizo elithi 'isihlahla' ngu: (What is the plural of 'isihlahla' — tree?)",
         options: ["A. amahlahla", "B. izihlahla", "C. imihlahla", "D. abahlahla"],
         answer: "B",
-        explanation: "Isigaba 7: isi- siba yi izi- ebuningini (isihlahla → izihlahla)."
+        explanation: "Class 7 nouns change isi- to izi- in the plural: isihlahla (tree) → izihlahla (trees)."
       },
       {
         id: "nd4",
-        question: "Isaga esithi 'Isikhuni sibuya lomlotha' sitshoni?",
+        question: "Isaga esithi 'Isikhuni sibuya lomlotha' sitshoni? (What does this proverb mean?)",
         options: ["A. Umlilo uyatshisa", "B. Okubi okwenzileyo kuzabuyela kuwe", "C. Inkuni zinhle", "D. Umlotha uyasiza"],
         answer: "B",
-        explanation: "Leli saga lifundisa ukuthi izenzo ezimbi zibuyela kumenzi wazo."
+        explanation: "Literally 'the firebrand returns with ashes' — your bad deeds come back to you. Option B says exactly that: the wrong you have done will return to you."
       },
       {
         id: "nd5",
-        question: "Isaga esithi 'Indlela ibuzwa kwabaphambili' sifundisa ukuthi:",
+        question: "Isaga esithi 'Indlela ibuzwa kwabaphambili' sifundisa ukuthi: (What does this proverb teach?)",
         options: ["A. Indlela inde kakhulu", "B. Asibuzeni kwabadala abalolwazi", "C. Abaphambili bayaphambanisa", "D. Indlela kayibuzwa"],
         answer: "B",
-        explanation: "Sifundisa ukuthi ulwazi luvela kwabadala lakwabalolwazi — funda kwabahambileyo phambili."
+        explanation: "Literally 'the way is asked from those ahead' — learn from elders and those with experience. Option B: let us ask the knowledgeable elders."
       },
       {
         id: "nd6",
-        question: "Isitsho esithi 'ukubamba inhliziyo' sitshoni?",
+        question: "Isitsho esithi 'ukubamba inhliziyo' sitshoni? (What does the idiom 'to hold the heart' mean?)",
         options: ["A. Ukugula", "B. Ukubekezela", "C. Ukugijima", "D. Ukuthukuthela"],
         answer: "B",
-        explanation: "'Ukubamba inhliziyo' yisitsho esitsho ukubekezela ebunzimeni."
+        explanation: "'Ukubamba inhliziyo' means ukubekezela — to be patient and endure hardship (not to be sick, run, or get angry)."
       },
       {
         id: "nd7",
-        question: "Khetha umtsho oqondileyo:",
+        question: "Khetha umtsho oqondileyo: (Choose the grammatically correct sentence — 'The cows are in the pasture.')",
         options: ["A. Izinkomo isedlelweni.", "B. Izinkomo zisedlelweni.", "C. Izinkomo lisedlelweni.", "D. Izinkomo usedlelweni."],
         answer: "B",
-        explanation: "Ubuningi besigaba 9 (izin-) buthatha isivumelwano 'zi-': Izinkomo zisedlelweni."
+        explanation: "The plural class 9 prefix (izin-) takes the concord 'zi-': Izinkomo zisedlelweni = The cows are in the pasture."
       },
       {
         id: "nd8",
-        question: "Ubuningi bebizo elithi 'ilizwe' ngu:",
+        question: "Ubuningi bebizo elithi 'ilizwe' ngu: (What is the plural of 'ilizwe' — country?)",
         options: ["A. amazwe", "B. izizwe", "C. imizwe", "D. ilizwana"],
         answer: "A",
-        explanation: "Isigaba 5: i(li)- liba ngu ama- ebuningini (ilizwe → amazwe)."
+        explanation: "Class 5 nouns change i(li)- to ama- in the plural: ilizwe (country) → amazwe (countries)."
       },
       {
         id: "nd9",
-        question: "Nxa ubingelela umuntu omdala ekuseni uthi:",
+        question: "Nxa ubingelela umuntu omdala ekuseni uthi: (How do you respectfully greet an elder in the morning?)",
         options: ["A. Uphi?", "B. Hamba!", "C. Salibonani, livukile?", "D. Yebo wena."],
         answer: "C",
-        explanation: "Inhlonipho ifuna sisebenzise 'Salibonani' lobuningi nxa sikhuluma lomuntu omdala."
+        explanation: "Respect (inhlonipho) requires the plural greeting 'Salibonani, livukile?' (Greetings, have you woken well?) when addressing an elder."
       },
       {
         id: "nd10",
-        question: "Isaga esithi 'Akusoka lingelasici' sitshoni?",
+        question: "Isaga esithi 'Akusoka lingelasici' sitshoni? (What does this proverb mean?)",
         options: ["A. Amasoka manengi", "B. Kakho umuntu opheleleyo", "C. Isici sihle", "D. Amasoka alezici wonke amabi"],
         answer: "B",
-        explanation: "Leli saga litsho ukuthi wonke umuntu ulesici — kakho opheleleyo."
+        explanation: "Literally 'there is no bachelor without a flaw' — nobody is perfect. Option B: there is no perfect person."
+      },
+      {
+        id: "nd11",
+        question: "Bala (read): 'Izinyanga zisebenzisa izimpande, amaxolo kanye lamahlamvu ukulungisa imithi.' Izinyanga zisebenzisa izingxenye ezingaki zezihlahla? (How many tree parts do the healers use?)",
+        options: ["A. ezimbili", "B. ezintathu", "C. ezine", "D. eyodwa"],
+        answer: "B",
+        explanation: "Three parts are named: izimpande (roots), amaxolo (bark), lamahlamvu (leaves) — ezintathu. This counting style is used in the real ZIMSEC comprehension paper."
+      },
+      {
+        id: "nd12",
+        question: "Bala (read): 'Izinyoni zakhela izidleke zazo ezihlahleni.' Ibala elithi 'izidleke' litshoni? (What does 'izidleke' mean?)",
+        options: ["A. nests", "B. branches", "C. feathers", "D. eggs"],
+        answer: "A",
+        explanation: "Izidleke = nests. The sentence says birds build their nests in trees. Vocabulary-in-context questions like this appear in the real paper."
+      },
+      {
+        id: "nd13",
+        question: "Kungani kufanele sihlanyele izihlahla ezintsha? (According to the reading passage, why must we plant new trees?)",
+        options: ["A. Ukuthengisa inkuni", "B. Ukubuyisela lezo eziganyuliweyo", "C. Ukwakha izindlu", "D. Ukudlala kuzo"],
+        answer: "B",
+        explanation: "The passage says we plant new trees 'ukubuyisela lezo eziganyuliweyo' — to replace those that have been cut down."
+      },
+      {
+        id: "nd14",
+        question: "Ngubani owelapha imikhuhlane ngemithi yesiNtu? (Who heals diseases using traditional medicine?)",
+        options: ["A. izinyoni", "B. izinyamazana", "C. izinyanga", "D. abafana"],
+        answer: "C",
+        explanation: "Izinyanga (traditional healers) prepare traditional medicines — not birds (izinyoni), animals (izinyamazana) or boys (abafana)."
       }
     ],
     paper2: [
       {
         id: "ndp2_1",
-        question: "Chaza ukuthi litsho ukuthini leli saga: 'Inja yomoya ayibambi.'",
-        sampleAnswer: "Litho ukuthi umuntu oguquguqukayo noma ongenelisi ukuhlala endaweni eyodwa noma ukugxila entweni eyodwa kasoze aphumelele.",
-        keywords: ["uguquguqukayo", "kasoze", "aphumelele", "gxila", "focus"],
-        explanation: "Leli saga lifundisa ngokugxila entweni eyodwa ukuze uphumelele."
+        question: "Chaza ukuthi litsho ukuthini leli saga: 'Inja yomoya ayibambi.' (Explain what this proverb means — 'A dog of the wind catches nothing.')",
+        sampleAnswer: "Litho ukuthi umuntu oguquguqukayo noma ongenelisi ukuhlala endaweni eyodwa noma ukugxila entweni eyodwa kasoze aphumelele. (It means a person who keeps changing direction and cannot focus on one thing will never succeed.)",
+        keywords: ["uguquguqukayo", "kasoze", "aphumelele", "gxila", "focus", "succeed"],
+        explanation: "The proverb teaches focus: a dog chasing the wind catches nothing, just like a person who keeps switching goals achieves nothing. Stick to one thing to succeed."
       },
       {
         id: "ndp2_2",
-        question: "Chaza isaga esithi 'Umntwana ongakhaliyo ufela embelekweni', unike isibonelo sempilo lapho esisebenza khona.",
-        sampleAnswer: "Litsho ukuthi umuntu ongaceli usizo noma ongakhulumiyo ngohlupho lwakhe kazukusizwa. Isibonelo: umfundi ongabuzi nxa engazwisisi esikolo uzasala emuva ezifundweni.",
-        keywords: ["usizo", "ongakhulumiyo", "ceala", "cela", "buza", "kazukusizwa", "khuluma"],
-        explanation: "Leli saga likhuthaza ukukhuluma lokucela usizo — abantu abangakhulumiyo kabasizwa."
+        question: "Chaza isaga esithi 'Umntwana ongakhaliyo ufela embelekweni', unike isibonelo sempilo lapho esisebenza khona. (Explain the proverb 'The child who does not cry dies on its mother's back', and give a real-life example.)",
+        sampleAnswer: "Litsho ukuthi umuntu ongaceli usizo noma ongakhulumiyo ngohlupho lwakhe kazukusizwa. Isibonelo: umfundi ongabuzi nxa engazwisisi esikolo uzasala emuva ezifundweni. (It means a person who does not speak up or ask for help will not be helped. Example: a learner who never asks questions when confused falls behind in class.)",
+        keywords: ["usizo", "ongakhulumiyo", "cela", "buza", "kazukusizwa", "khuluma", "help", "speak"],
+        explanation: "A mother only knows the baby needs something when it cries. The proverb encourages speaking up and asking for help — those who stay silent are not helped."
       },
       {
         id: "ndp2_3",
-        question: "Bhala imitsho le ebuningini: (a) Umfana udlala ebaleni. (b) Isihlahla sikhulile. (c) Inkomo isedlelweni.",
-        sampleAnswer: "(a) Abafana badlala ebaleni. (b) Izihlahla zikhulile. (c) Izinkomo zisedlelweni.",
+        question: "Bhala imitsho le ebuningini (Rewrite these sentences in the plural): (a) Umfana udlala ebaleni. (The boy plays outside.) (b) Isihlahla sikhulile. (The tree has grown.) (c) Inkomo isedlelweni. (The cow is in the pasture.)",
+        sampleAnswer: "(a) Abafana badlala ebaleni. (b) Izihlahla zikhulile. (c) Izinkomo zisedlelweni. (The boys play outside. The trees have grown. The cows are in the pasture.)",
         keywords: ["abafana", "badlala", "izihlahla", "zikhulile", "izinkomo", "zisedlelweni"],
-        explanation: "Guqula ibizo libe sebuningini, ubusuguqula isivumelwano sesenzo: u- → ba-, si- → zi-, i- → zi-."
+        explanation: "Change the noun to its plural form, then change the verb concord to match: u- → ba- (class 1), si- → zi- (class 7), i- → zi- (class 9)."
       },
       {
         id: "ndp2_4",
-        question: "Chaza umehluko phakathi kwencwadi yobungane lencwadi esemthethweni.",
-        sampleAnswer: "Incwadi yobungane ilekheli elilodwa, ukubingelela okukhululekileyo, lolimi olukhululekileyo. Incwadi esemthethweni ilamakheli amabili, isihloko, ulimi oluhloniphayo, lesiphetho esisemthethweni.",
-        keywords: ["ikheli", "amakheli amabili", "isihloko", "hlonipha", "khululekile"],
-        explanation: "Umehluko usekhelini (elilodwa loba amabili), olimini (olukhululekileyo loba oluhloniphayo) lesihlokweni."
+        question: "Chaza umehluko phakathi kwencwadi yobungane lencwadi esemthethweni. (Explain the difference between a friendly letter and a formal letter.)",
+        sampleAnswer: "Incwadi yobungane ilekheli elilodwa, ukubingelela okukhululekileyo, lolimi olukhululekileyo. Incwadi esemthethweni ilamakheli amabili, isihloko, ulimi oluhloniphayo, lesiphetho esisemthethweni. (A friendly letter has one address, a relaxed greeting and casual language. A formal letter has two addresses, a subject line, respectful language and a formal closing.)",
+        keywords: ["ikheli", "amakheli amabili", "isihloko", "hlonipha", "khululekile", "address", "subject"],
+        explanation: "The difference lies in the addresses (one vs two), the language (casual vs respectful), and the subject line (only formal letters have one)."
       }
     ]
   },
@@ -1120,6 +1394,8 @@ Please see the Paper 1 and Paper 2 guides for full exam preparation.
     `,
     readingMaterialPaper1: `
 ### FAMILY & RELIGIOUS STUDIES (FRS) GRADE 7: PAPER 1 (MULTIPLE CHOICE PREP)
+
+**Syllabus note**: the FAREME syllabus also covers Judaism and Hinduism basics, conflict resolution and peace-making, and health/decision-making (including HIV and AIDS awareness). Religion questions also appear inside the Social Science paper (e.g. baptism, rainmaking ceremonies).
 
 #### 1. Ubuntu / Unhu (Humanity & Ethics)
 - **Unhu/Ubuntu** is an indigenous ethical framework emphasising community solidarity, respect for elders, moral uprightness, and kindness. Core philosophy: **"I am because we are."**

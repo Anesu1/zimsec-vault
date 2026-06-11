@@ -52,4 +52,10 @@ export default defineSchema({
     label: v.string(),
     earnedAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  rateLimits: defineTable({
+    key: v.string(),
+    count: v.number(),
+    resetAt: v.number(),
+  }).index("by_key", ["key"]),
 });
