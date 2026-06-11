@@ -435,10 +435,9 @@ export default function Home() {
     dismissQuestComplete, recordQuizScore,
   } = useGameState();
 
-  // Selected config for the ZIMSEC Study Chamber
   const [selectedSubject, setSelectedSubject] = useState<string>("Mathematics");
   const [selectedPaper, setSelectedPaper] = useState<"Paper 1" | "Paper 2">("Paper 1");
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(true); // Default to demo/testing mode for quick evaluation
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false); // Default to Standard 10-min Mode
 
   const materials = curriculumData[selectedSubject] || curriculumData["Mathematics"];
   const getReadingMaterial = () => {
@@ -1366,7 +1365,7 @@ export default function Home() {
                               : "text-white/60 hover:text-white"
                           }`}
                         >
-                          Exam (90m)
+                          Standard (10m)
                         </button>
                         <button
                           onClick={() => setIsDemoMode(true)}
@@ -1376,7 +1375,7 @@ export default function Home() {
                               : "text-white/60 hover:text-white"
                           }`}
                         >
-                          Quick (2m)
+                          Demo (2m)
                         </button>
                       </div>
                     </div>
