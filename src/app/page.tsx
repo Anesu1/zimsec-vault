@@ -6,10 +6,10 @@ import {
   Play, Pause, ShieldAlert, LogOut, BookOpen,
   ShieldCheck, AlertTriangle, Trophy, Clock, Lock,
   CheckCircle2, XCircle, Eye, MessageSquare, Send,
-  Calendar, TrendingUp
+  Calendar, TrendingUp, ArrowLeft
 } from "lucide-react";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
-import { curriculumData } from "../lib/curriculumData";
+import { curriculumData, type Question, type Paper2Question } from "../lib/curriculumData";
 
 const COLORS = [
   { name: "red",    hex: "#ef4444", label: "Red" },
@@ -33,6 +33,54 @@ const CHECKPOINT_INTERVAL_SECONDS = 600; // unskippable attention check every 10
 const DEMO_READING_SECONDS = 120;
 const DEMO_EXAM_SECONDS = 60;
 const DEMO_CHECKPOINT_INTERVAL = 60;
+
+// Per-session rotation — each session draws a fresh subset of questions and
+// study sections; nothing repeats until the whole pool has been used.
+const QUIZ_PER_SESSION = 8;
+const PAPER2_PER_SESSION = 3;
+const READING_SECTIONS_PER_SESSION = 5;
+
+function shuffle<T>(arr: T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function pickRotation<T>(items: T[], count: number, storageKey: string, idOf: (item: T) => string): T[] {
+  if (items.length <= count) return shuffle(items);
+  let seen: string[] = [];
+  try {
+    seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
+  } catch {
+    seen = [];
+  }
+  let pool = items.filter((it) => !seen.includes(idOf(it)));
+  if (pool.length < count) {
+    // Pool exhausted — start a new rotation, carrying the leftover unseen items
+    seen = [];
+    const carryIds = pool.map(idOf);
+    const refill = shuffle(items.filter((it) => !carryIds.includes(idOf(it)))).slice(0, count - pool.length);
+    pool = [...pool, ...refill];
+  }
+  const chosen = shuffle(pool).slice(0, count);
+  localStorage.setItem(storageKey, JSON.stringify([...seen, ...chosen.map(idOf)]));
+  return chosen;
+}
+
+// Rotate the #### sections of a study guide, keeping the ### title block and
+// curriculum order so the reading stays coherent.
+function pickReadingRotation(material: string, storageKey: string): string {
+  const parts = material.split(/\n(?=#### )/);
+  const header = parts[0];
+  const sections = parts.slice(1);
+  if (sections.length <= READING_SECTIONS_PER_SESSION) return material;
+  const chosen = pickRotation(sections, READING_SECTIONS_PER_SESSION, storageKey, (s) => s.slice(0, 40));
+  const ordered = sections.filter((s) => chosen.includes(s));
+  return [header, ...ordered].join("\n");
+}
 
 interface ActivityEntry {
   timestamp: string;
@@ -423,6 +471,11 @@ export default function Home() {
   // Exam answers
   const [paper1Answers, setPaper1Answers] = useState<Record<string, string>>({});
   const [paper2Answers, setPaper2Answers] = useState<Record<string, string>>({});
+
+  // This session's rotated selection of questions and study sections
+  const [sessionQuiz, setSessionQuiz] = useState<Question[]>([]);
+  const [sessionPaper2, setSessionPaper2] = useState<Paper2Question[]>([]);
+  const [sessionReading, setSessionReading] = useState<string>("");
   
   // Dashboard UI toggle
   const [showDashboard, setShowDashboard] = useState<boolean>(false);
@@ -627,8 +680,8 @@ export default function Home() {
     const details: any[] = [];
 
     if (isPaper1) {
-      totalQuestions = materials.quiz.length;
-      materials.quiz.forEach((q) => {
+      totalQuestions = sessionQuiz.length;
+      sessionQuiz.forEach((q) => {
         const studentAns = paper1Answers[q.id];
         const isCorrect = studentAns === q.answer;
         if (isCorrect) score++;
@@ -642,8 +695,8 @@ export default function Home() {
       });
     } else {
       // Paper 2 Simulated AI evaluation
-      totalQuestions = materials.paper2.length;
-      materials.paper2.forEach((q) => {
+      totalQuestions = sessionPaper2.length;
+      sessionPaper2.forEach((q) => {
         const studentAns = paper2Answers[q.id] || "";
         const lowerAns = studentAns.toLowerCase();
         
@@ -786,17 +839,37 @@ export default function Home() {
     setCheckpointVisible(false);
     setPaper1Answers({});
     setPaper2Answers({});
-    
+
+    // Draw this session's questions and study sections from the rotation pool
+    const rotationBase = `zimsec_rotation_${selectedSubject}_${selectedPaper}`;
+    if (selectedPaper === "Paper 1") {
+      setSessionQuiz(pickRotation(materials.quiz, QUIZ_PER_SESSION, `${rotationBase}_quiz`, (q) => q.id));
+      setSessionPaper2([]);
+    } else {
+      setSessionPaper2(pickRotation(materials.paper2, PAPER2_PER_SESSION, `${rotationBase}_p2`, (q) => q.id));
+      setSessionQuiz([]);
+    }
+    setSessionReading(pickReadingRotation(getReadingMaterial(), `${rotationBase}_reading`));
+
     // Reading phase duration: 2 minutes for demo, 40 minutes for real ZIMSEC Prep
     setChamberTimer(isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS);
     setChamberPhase("reading");
     setIsTimerRunning(false); // Student must click unblur button to start
   };
 
+  // Go home to the setup room and fully reset the session state
   const resetToSetup = () => {
     setChamberPhase("setup");
     setIsTimerRunning(false);
     setChamberTimer(0);
+    setViolations(0);
+    setShowCheatAlert(false);
+    setCheckpointVisible(false);
+    setPaper1Answers({});
+    setPaper2Answers({});
+    setSessionQuiz([]);
+    setSessionPaper2([]);
+    setSessionReading("");
   };
 
   const examReport = chamberPhase === "results" ? getResults() : null;
@@ -1145,6 +1218,16 @@ export default function Home() {
             {/* Chamber Status Bar */}
             <div className="w-full bg-[#121314] border border-white/10 p-4 rounded-lg flex items-center justify-between shadow-xl">
               <div className="flex items-center gap-3">
+                {chamberPhase !== "setup" && (
+                  <button
+                    onClick={resetToSetup}
+                    title="Back to Chamber Setup (abandons this session)"
+                    aria-label="Back to Chamber Setup"
+                    className="w-10 h-10 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white flex items-center justify-center rounded-full transition-all cursor-pointer"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                )}
                 <div className="w-10 h-10 bg-[#0070d1]/10 border border-[#0070d1]/20 text-[#53b1ff] flex items-center justify-center rounded-lg font-bold">
                   <BookOpen className="w-5 h-5" />
                 </div>
@@ -1401,7 +1484,7 @@ export default function Home() {
                     }`}>
                       {/* Render paragraphs of study guide and diagrams */}
                       <div className="space-y-4">
-                        {formatReadingText(getReadingMaterial())}
+                        {formatReadingText(sessionReading || getReadingMaterial())}
                         <SyllabusVisuals subject={selectedSubject} />
                       </div>
                     </div>
@@ -1499,7 +1582,7 @@ export default function Home() {
                 {/* PAPER 1 MCQ ENGINE */}
                 {selectedPaper === "Paper 1" && (
                   <div className="flex flex-col gap-6">
-                    {materials.quiz.map((q, idx) => (
+                    {sessionQuiz.map((q, idx) => (
                       <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-4">
                         <div className="flex items-center gap-3">
                           <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">
@@ -1536,7 +1619,7 @@ export default function Home() {
                 {/* PAPER 2 WRITTEN SECTION */}
                 {selectedPaper === "Paper 2" && (
                   <div className="flex flex-col gap-6">
-                    {materials.paper2.map((q, idx) => (
+                    {sessionPaper2.map((q, idx) => (
                       <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-4">
                         <div className="flex items-center gap-3">
                           <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">
