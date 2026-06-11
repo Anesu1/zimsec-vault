@@ -6,7 +6,7 @@ import {
   Play, Pause, ShieldAlert, LogOut, BookOpen,
   ShieldCheck, AlertTriangle, Trophy, Clock, Lock,
   CheckCircle2, XCircle, Eye, MessageSquare, Send,
-  Calendar, TrendingUp, ArrowLeft
+  Calendar, TrendingUp, ArrowLeft, X, Sparkles
 } from "lucide-react";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import { curriculumData, type Question, type Paper2Question } from "../lib/curriculumData";
@@ -479,6 +479,7 @@ export default function Home() {
   
   // Dashboard UI toggle
   const [showDashboard, setShowDashboard] = useState<boolean>(false);
+  const [isMobileChatOpen, setIsMobileChatOpen] = useState<boolean>(false);
 
   // Parent audit and activity log state
   const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
@@ -1390,7 +1391,7 @@ export default function Home() {
                 </div>
 
                 {/* Socratic AI Homework Helper Box */}
-                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
+                <div className="hidden md:flex md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
                   <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2 border-b border-white/10 pb-2">
                     <MessageSquare className="w-4 h-4" />
                     <span>Socratic Homework Helper</span>
@@ -1509,7 +1510,7 @@ export default function Home() {
                 </div>
 
                 {/* Socratic AI Homework Helper Box during Reading */}
-                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
+                <div className="hidden md:flex md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
                   <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2 border-b border-white/10 pb-2">
                     <MessageSquare className="w-4 h-4" />
                     <span>Socratic Homework Helper</span>
@@ -1859,6 +1860,78 @@ export default function Home() {
               </form>
             </div>
           </div>
+        )}
+
+        {/* Mobile Floating AI Bubble & Drawer */}
+        {(chamberPhase === "setup" || chamberPhase === "reading") && (
+          <>
+            <div className="md:hidden fixed bottom-6 right-6 z-40">
+              <button
+                onClick={() => setIsMobileChatOpen(v => !v)}
+                className="w-12 h-12 bg-gradient-to-tr from-[#0070d1] to-blue-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-500/20 hover:scale-105 transition-all cursor-pointer border border-white/10"
+                title="Ask Socratic Tutor"
+              >
+                {isMobileChatOpen ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {isMobileChatOpen && (
+              <div className="md:hidden fixed bottom-20 right-6 left-6 max-w-sm ml-auto bg-[#121314] border border-[#0070d1]/30 p-5 rounded-2xl flex flex-col gap-3 shadow-2xl h-[450px] z-50 overflow-hidden anim-panel backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Socratic Homework Helper</span>
+                  </h3>
+                  <button
+                    onClick={() => setIsMobileChatOpen(false)}
+                    className="text-white/40 hover:text-white p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Chat bubbles */}
+                <div className="flex-1 overflow-y-auto p-2 bg-black/20 rounded-lg space-y-3 flex flex-col min-h-0 text-xs">
+                  {chatHistory.map((msg, i) => (
+                    <div 
+                      key={i} 
+                      className={`p-2.5 rounded-lg max-w-[85%] leading-relaxed ${
+                        msg.sender === "student" 
+                          ? "bg-[#0070d1]/10 border border-[#0070d1]/20 text-[#53b1ff] self-end"
+                          : "bg-white/5 border border-white/10 text-white/90 self-start"
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  ))}
+                  {chatLoading && (
+                    <div className="bg-white/5 border border-white/10 p-2.5 rounded-lg self-start text-white/50 animate-pulse">
+                      Tutor is thinking...
+                    </div>
+                  )}
+                  <div ref={chatBottomRef} />
+                </div>
+
+                {/* Chat Input form */}
+                <form onSubmit={sendChatMessage} className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Ask homework query..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#0070d1]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={chatLoading}
+                    className="p-2.5 bg-[#0070d1] hover:bg-[#0064b7] text-white rounded-lg flex items-center justify-center transition-all cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              </div>
+            )}
+          </>
         )}
 
       </main>
