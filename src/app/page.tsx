@@ -26,9 +26,9 @@ const COLORS = [
   { name: "indigo", hex: "#6366f1", label: "Indigo" },
 ];
 
-// Session timing — 40 min focused reading + 50 min practice = 1h30 total
-const READING_SECONDS = 2400;
-const EXAM_SECONDS = 3000;
+// Session timing — 50 min focused reading + 40 min practice = 1h30 total
+const READING_SECONDS = 3000;
+const EXAM_SECONDS = 2400;
 const CHECKPOINT_INTERVAL_SECONDS = 600; // unskippable attention check every 10 min of reading
 const DEMO_READING_SECONDS = 120;
 const DEMO_EXAM_SECONDS = 60;
@@ -851,7 +851,7 @@ export default function Home() {
     }
     setSessionReading(pickReadingRotation(getReadingMaterial(), `${rotationBase}_reading`));
 
-    // Reading phase duration: 2 minutes for demo, 40 minutes for real ZIMSEC Prep
+    // Reading phase duration: 2 minutes for demo, 50 minutes for real ZIMSEC Prep
     setChamberTimer(isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS);
     setChamberPhase("reading");
     setIsTimerRunning(false); // Student must click unblur button to start
