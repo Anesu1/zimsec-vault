@@ -912,7 +912,7 @@ export default function Home() {
       <main className="p-4 md:p-6 flex flex-col items-center justify-start max-w-5xl mx-auto gap-6 relative z-10">
         
         {/* ── Header Toolbar ── */}
-        <div className="w-full bg-white/5 border border-white/10 py-3 px-6 rounded-full flex items-center justify-between text-xs font-bold anim-panel shadow-lg backdrop-blur-md">
+        <div className="w-full bg-white/5 border border-white/10 py-3 px-6 rounded-2xl md:rounded-full flex flex-col sm:flex-row items-center justify-between text-xs font-bold anim-panel shadow-lg backdrop-blur-md gap-4 sm:gap-2">
           <div className="flex items-center gap-3">
             <span className="w-8 h-8 bg-[#0070d1] rounded-full flex items-center justify-center text-white font-bold text-sm">
               {user.username.charAt(0).toUpperCase()}
@@ -922,7 +922,7 @@ export default function Home() {
               <span className="text-[9px] text-[#53b1ff] font-bold tracking-wider uppercase">{levelName}</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-center">
             <span className="text-orange-400 font-extrabold text-xs">{user.currentStreak} Day Streak</span>
             <span className="text-white/15">|</span>
             <button
@@ -1216,7 +1216,7 @@ export default function Home() {
           <div className="w-full flex flex-col gap-6">
 
             {/* Chamber Status Bar */}
-            <div className="w-full bg-[#121314] border border-white/10 p-4 rounded-lg flex items-center justify-between shadow-xl">
+            <div className="w-full bg-[#121314] border border-white/10 p-4 rounded-lg flex flex-col md:flex-row gap-4 items-start md:items-center justify-between shadow-xl">
               <div className="flex items-center gap-3">
                 {chamberPhase !== "setup" && (
                   <button
@@ -1249,7 +1249,7 @@ export default function Home() {
 
               {/* Security Status Badge */}
               {(chamberPhase === "reading" || chamberPhase === "exam") && (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 flex-wrap">
                   <div className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-[10px] font-bold border ${
                     violations === 0 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" :
                     violations < 3 ? "bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse" :
@@ -1287,7 +1287,7 @@ export default function Home() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       {activeSubjects.length > 0 ? `Today's Scheduled Subjects (${currentDay})` : "Open Practice Subjects (Weekend Mode)"}
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {(activeSubjects.length > 0 ? activeSubjects : Object.keys(curriculumData)).map((sub) => {
                         // A subject is mastered only if BOTH Paper 1 and Paper 2 are completed
                         const p1Mastered = !!masteredPapers[`${sub}:Paper 1`];
@@ -1324,7 +1324,7 @@ export default function Home() {
                   </div>
 
                   {/* Paper Select */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Exam Format</label>
                       <div className="flex bg-white/5 rounded-lg p-1 border border-white/10">
@@ -1451,7 +1451,7 @@ export default function Home() {
                 >
                   
                   {/* Control Panel Header */}
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
                     <div>
                       <span className="text-[10px] text-[#53b1ff] font-bold tracking-widest uppercase">ZIMSEC Syllabus Revision Guide</span>
                       <h3 className="text-xl font-bold mt-1">{selectedSubject} Overview</h3>
@@ -1565,7 +1565,7 @@ export default function Home() {
               >
                 
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
                   <div>
                     <span className="text-[10px] text-[#53b1ff] font-bold tracking-widest uppercase">ZIMSEC PRACTICE TEST</span>
                     <h3 className="text-xl font-bold mt-1">{selectedSubject} — {selectedPaper}</h3>
@@ -1725,12 +1725,12 @@ export default function Home() {
 
                   {examReport.details.map((item, idx) => (
                     <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col gap-3">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-b border-white/5 pb-2">
+                        <div className="flex items-start gap-2">
                           <span className="text-xs font-bold text-white/40">{idx + 1}.</span>
-                          <p className="text-xs font-bold text-white">{item.question}</p>
+                          <p className="text-xs font-bold text-white leading-relaxed">{item.question}</p>
                         </div>
-                        <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
+                        <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded border self-start sm:self-auto shrink-0 ${
                           item.isCorrect 
                             ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
                             : "bg-rose-500/10 border-rose-500/20 text-rose-400"
