@@ -26,10 +26,10 @@ const COLORS = [
   { name: "indigo", hex: "#6366f1", label: "Indigo" },
 ];
 
-// Session timing — 50 min focused reading + 40 min practice = 1h30 total
-const READING_SECONDS = 3000;
+// Session timing — 10 min focused reading + 40 min practice = 50 min total
+const READING_SECONDS = 600; // 10 minutes
 const EXAM_SECONDS = 2400;
-const CHECKPOINT_INTERVAL_SECONDS = 600; // unskippable attention check every 10 min of reading
+const CHECKPOINT_INTERVAL_SECONDS = 300; // unskippable attention check every 5 min of reading
 const DEMO_READING_SECONDS = 120;
 const DEMO_EXAM_SECONDS = 60;
 const DEMO_CHECKPOINT_INTERVAL = 60;
