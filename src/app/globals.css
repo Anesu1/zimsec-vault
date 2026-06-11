@@ -1,109 +1,106 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;850&display=swap');
 @import "tailwindcss";
 
+/*
+  PlayStation design system tokens — see DESIGN.md in project root.
+  Three-canvas chapter system: black / white / PlayStation Blue.
+  Chrome is flat: no resting shadows, no decorative gradients.
+  The single allowed gradient is the PS Plus gold, reserved for
+  the token-economy / rewards chrome.
+*/
 :root {
-  --background: #080050;
-  --foreground: #f1f5f9;
-  --miro-yellow: #ffd02f;
-  --miro-yellow-deep: #e6b825;
-  --brand-blue: #4d9fff;
+  --background: #000000;            /* canvas-dark */
+  --foreground: #ffffff;            /* on-dark */
 
-  /* Sticky Note Pastel Palette — kept vivid for card contrast on dark bg */
-  --pastel-yellow: #fffdf0;
-  --pastel-coral: #fff5f0;
-  --pastel-teal: #f0fdfa;
-  --pastel-rose: #fff0f5;
-  --pastel-mint: #f0fdf4;
+  --ps-blue: #0070d1;               /* primary */
+  --ps-blue-pressed: #0064b7;       /* primary-pressed */
+  --ps-blue-active: #004d8d;        /* primary-active */
+  --link-dark: #53b1ff;             /* inline links on dark canvas */
+  --commerce: #d53b00;              /* store/spend actions only */
+  --commerce-pressed: #aa2f00;
+  --warning: #c81b3a;
 
-  --hairline: rgba(255,255,255,0.08);
-  --hairline-soft: rgba(255,255,255,0.04);
-  --hairline-strong: rgba(255,255,255,0.12);
+  --surface-elevated: #121314;      /* surface-dark-elevated */
+  --surface-card: #181818;          /* surface-dark-card */
+
+  --body-dark: rgba(255, 255, 255, 0.7);
+  --mute-dark: rgba(229, 229, 229, 0.55);
+  --ash-dark: rgba(229, 229, 229, 0.2);
+
+  --hairline: rgba(229, 229, 229, 0.2);       /* hairline-dark */
+  --hairline-soft: rgba(229, 229, 229, 0.1);
+  --hairline-strong: rgba(229, 229, 229, 0.3);
+
+  /* PS Plus gold gradient — rewards / screen-token chrome only */
+  --gold-start: #ffce21;
+  --gold-mid: #f5a623;
+  --gold-end: #ee8e00;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand-yellow: var(--miro-yellow);
-  --color-brand-blue: var(--brand-blue);
-  
-  --color-pastel-yellow: var(--pastel-yellow);
-  --color-pastel-coral: var(--pastel-coral);
-  --color-pastel-teal: var(--pastel-teal);
-  --color-pastel-rose: var(--pastel-rose);
-  --color-pastel-mint: var(--pastel-mint);
-  
-  --font-sans: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --color-ps-blue: var(--ps-blue);
+  --color-ps-blue-pressed: var(--ps-blue-pressed);
+  --color-ps-blue-active: var(--ps-blue-active);
+  --color-link-dark: var(--link-dark);
+  --color-commerce: var(--commerce);
+  --color-warning: var(--warning);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-card: var(--surface-card);
+
+  --font-sans: var(--font-inter), 'Inter', Arial, Helvetica, sans-serif;
+  --font-display: var(--font-roboto), 'Roboto', Arial, Helvetica, sans-serif;
 }
 
 body {
-  background-color: #050036;
-  color: var(--foreground);
-  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* Miro Board Styling */
-.miro-canvas {
   background-color: var(--background);
-  border: 1px solid var(--hairline-strong);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  color: var(--foreground);
+  font-family: var(--font-inter), 'Inter', Arial, Helvetica, sans-serif;
 }
 
-.sticky-note-yellow {
-  background-color: var(--pastel-yellow);
-  border: 1px solid rgba(255, 208, 47, 0.3);
-  box-shadow: 0 4px 8px rgba(255, 208, 47, 0.05);
+/* Display headings render light (300) — the PlayStation editorial voice */
+h1, h2 {
+  font-family: var(--font-roboto), 'Roboto', Arial, Helvetica, sans-serif;
 }
 
-.sticky-note-coral {
-  background-color: var(--pastel-coral);
-  border: 1px solid rgba(239, 68, 68, 0.15);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.05);
-}
-
-.sticky-note-teal {
-  background-color: var(--pastel-teal);
-  border: 1px solid rgba(20, 184, 166, 0.15);
-  box-shadow: 0 4px 8px rgba(20, 184, 166, 0.05);
-}
-
-.sticky-note-rose {
-  background-color: var(--pastel-rose);
-  border: 1px solid rgba(236, 72, 153, 0.15);
-  box-shadow: 0 4px 8px rgba(236, 72, 153, 0.05);
-}
-
-.sticky-note-mint {
-  background-color: var(--pastel-mint);
-  border: 1px solid rgba(34, 197, 94, 0.15);
-  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.05);
-}
-
-/* Button & pill styles */
+/* Pill CTAs — every primary action is a fully-rounded PlayStation Blue pill */
 .button-primary {
-  background-color: #050036;
+  background-color: var(--ps-blue);
   color: #ffffff;
-  font-weight: 500;
-  transition: all 150ms ease-in-out;
+  font-weight: 700;
+  letter-spacing: 0.45px;
+  border-radius: 9999px;
+  transition: background-color 150ms ease-in-out;
 }
 
 .button-primary:hover {
-  background-color: #1a1555;
-  transform: translateY(-1px);
+  background-color: var(--ps-blue-pressed);
+}
+
+.button-primary:active {
+  background-color: var(--ps-blue-active);
 }
 
 .button-secondary {
   background-color: transparent;
   color: var(--foreground);
-  border: 1px solid var(--hairline-strong);
-  font-weight: 500;
+  border: 1px solid var(--hairline);
+  font-weight: 700;
+  letter-spacing: 0.45px;
+  border-radius: 9999px;
   transition: all 150ms ease-in-out;
 }
 
 .button-secondary:hover {
-  background-color: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.25);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: var(--hairline-strong);
+}
+
+/* PS Plus gold accent bar — token-economy / reward banners only */
+.gold-accent-bar {
+  background-image: linear-gradient(to right, var(--gold-start), var(--gold-mid), var(--gold-end));
+  height: 4px;
+  border-radius: 9999px;
 }
 
 /* ── Scroll & entrance animation keyframes ── */

@@ -2,14 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useGameState } from "../hooks/useGameState";
-import { 
-  Play, Pause, ShieldAlert, Volume2, LogOut, BookOpen, 
-  ShieldCheck, AlertTriangle, Trophy, Clock, Lock, 
-  CheckCircle2, XCircle, Eye, EyeOff, RotateCcw, AlertCircle,
-  MessageSquare, Send, Sparkles, Calendar, TrendingUp, RefreshCw
+import {
+  Play, Pause, ShieldAlert, LogOut, BookOpen,
+  ShieldCheck, AlertTriangle, Trophy, Clock, Lock,
+  CheckCircle2, XCircle, Eye, MessageSquare, Send,
+  Calendar, TrendingUp
 } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import { curriculumData } from "../lib/curriculumData";
 
@@ -27,6 +25,14 @@ const COLORS = [
   { name: "coral",  hex: "#fb7185", label: "Coral" },
   { name: "indigo", hex: "#6366f1", label: "Indigo" },
 ];
+
+// Session timing — 40 min focused reading + 50 min practice = 1h30 total
+const READING_SECONDS = 2400;
+const EXAM_SECONDS = 3000;
+const CHECKPOINT_INTERVAL_SECONDS = 600; // unskippable attention check every 10 min of reading
+const DEMO_READING_SECONDS = 120;
+const DEMO_EXAM_SECONDS = 60;
+const DEMO_CHECKPOINT_INTERVAL = 60;
 
 interface ActivityEntry {
   timestamp: string;
@@ -59,29 +65,29 @@ function AuthScreen({
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#030026] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-black relative overflow-hidden">
       {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#ffd02f]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#0070d1]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#0070d1]/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-sm relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-[#ffd02f] to-[#e6a200] rounded-2xl mb-4 shadow-xl shadow-yellow-500/10 border border-white/10">
-            <span className="text-3xl">🛡️</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#0070d1] rounded-lg mb-4 border border-white/10">
+            <ShieldCheck className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight">ZIMSEC Study Chamber</h1>
+          <h1 className="text-3xl font-light text-white tracking-tight">ZIMSEC Study Chamber</h1>
           <p className="text-xs text-slate-400 font-semibold mt-2">Grade 7 Exam Security & Practice Vault</p>
         </div>
 
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-6 shadow-2xl">
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl">
           <div className="flex bg-white/5 rounded-full p-1 mb-6 border border-white/5">
             {(["login", "register"] as const).map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={`flex-1 py-2 rounded-full text-xs font-black transition-all cursor-pointer ${
-                  mode === m ? "bg-[#ffd02f] text-[#050036] shadow-md" : "text-slate-400 hover:text-slate-200"
+                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  mode === m ? "bg-[#0070d1] text-white shadow-md" : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {m === "login" ? "Log In" : "Sign Up"}
@@ -91,7 +97,7 @@ function AuthScreen({
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="text-[10px] font-black text-[#ffd02f] uppercase tracking-wider block mb-1.5">
+              <label className="text-[10px] font-bold text-[#53b1ff] uppercase tracking-wider block mb-1.5">
                 What&apos;s your name?
               </label>
               <input
@@ -99,12 +105,12 @@ function AuthScreen({
                 placeholder="e.g. MathWarrior99"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-bold text-white outline-none focus:border-[#ffd02f] transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-sm font-bold text-white outline-none focus:border-[#0070d1] transition-all"
               />
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-[#ffd02f] uppercase tracking-wider block mb-2">
+              <label className="text-[10px] font-bold text-[#53b1ff] uppercase tracking-wider block mb-2">
                 What&apos;s your favourite colour?
               </label>
               <div className="grid grid-cols-6 gap-2">
@@ -115,9 +121,9 @@ function AuthScreen({
                     title={c.label}
                     aria-pressed={selectedColor === c.name}
                     onClick={() => setSelectedColor(c.name)}
-                    className={`w-full aspect-square rounded-xl border-2 transition-all cursor-pointer min-h-11 ${
+                    className={`w-full aspect-square rounded-lg border-2 transition-all cursor-pointer min-h-11 ${
                       selectedColor === c.name
-                        ? "border-[#ffd02f] scale-110 shadow-lg"
+                        ? "border-[#0070d1] scale-110 shadow-lg"
                         : "border-transparent hover:scale-105 hover:border-white/20"
                     }`}
                     style={{ backgroundColor: c.hex }}
@@ -132,14 +138,14 @@ function AuthScreen({
             </div>
 
             {authError && (
-              <p className="text-rose-400 text-xs font-bold bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2">
+              <p className="text-rose-400 text-xs font-bold bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
                 {authError}
               </p>
             )}
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#ffd02f] hover:bg-[#e6a200] text-[#050036] font-black rounded-full text-sm transition-all cursor-pointer shadow-lg shadow-yellow-500/10"
+              className="w-full py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-sm transition-all cursor-pointer"
             >
               {mode === "login" ? "Start Learning →" : "Create My Account →"}
             </button>
@@ -180,16 +186,16 @@ function formatReadingText(text: string) {
     
     // Headers
     if (cleanLine.startsWith("####")) {
-      return <h5 key={idx} className="text-xs font-black text-[#ffd02f] tracking-wide mt-3 mb-1 uppercase">{cleanLine.replace(/####/g, "").trim()}</h5>;
+      return <h5 key={idx} className="text-xs font-bold text-[#53b1ff] tracking-wide mt-3 mb-1 uppercase">{cleanLine.replace(/####/g, "").trim()}</h5>;
     }
     if (cleanLine.startsWith("###")) {
-      return <h4 key={idx} className="text-xs font-black text-[#ffd02f] tracking-wider mt-4 mb-2 uppercase border-b border-white/10 pb-1">{cleanLine.replace(/###/g, "").trim()}</h4>;
+      return <h4 key={idx} className="text-xs font-bold text-[#53b1ff] tracking-wider mt-4 mb-2 uppercase border-b border-white/10 pb-1">{cleanLine.replace(/###/g, "").trim()}</h4>;
     }
     if (cleanLine.startsWith("##")) {
-      return <h3 key={idx} className="text-sm font-black text-white mt-5 mb-3 border-b border-white/20 pb-1.5">{cleanLine.replace(/##/g, "").trim()}</h3>;
+      return <h3 key={idx} className="text-sm font-bold text-white mt-5 mb-3 border-b border-white/20 pb-1.5">{cleanLine.replace(/##/g, "").trim()}</h3>;
     }
     if (cleanLine.startsWith("#")) {
-      return <h2 key={idx} className="text-base font-black text-[#ffd02f] mt-6 mb-4">{cleanLine.replace(/#/g, "").trim()}</h2>;
+      return <h2 key={idx} className="text-base font-bold text-[#53b1ff] mt-6 mb-4">{cleanLine.replace(/#/g, "").trim()}</h2>;
     }
 
     // List item check
@@ -202,7 +208,7 @@ function formatReadingText(text: string) {
     const processedParts = cleanLine.includes("**") ? cleanLine.split("**") : [cleanLine];
     const elements = processedParts.map((part, pIdx) => {
       if (pIdx % 2 === 1) {
-        return <strong key={pIdx} className="text-[#ffd02f] font-bold">{part}</strong>;
+        return <strong key={pIdx} className="text-[#53b1ff] font-bold">{part}</strong>;
       }
       return part;
     });
@@ -227,14 +233,14 @@ function formatReadingText(text: string) {
 function SyllabusVisuals({ subject }: { subject: string }) {
   if (subject === "Mathematics") {
     return (
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-3 my-4">
-        <span className="text-[10px] text-white/40 font-black uppercase tracking-wider">Mathematics Geometry Models</span>
+      <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col items-center gap-3 my-4">
+        <span className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Mathematics Geometry Models</span>
         <div className="flex flex-wrap justify-center gap-6 p-2 w-full">
           {/* Rectangle Area Model */}
           <div className="flex flex-col items-center gap-1.5">
             <svg width="120" height="80" className="overflow-visible">
-              <rect x="10" y="15" width="100" height="50" rx="6" fill="url(#mathGrad)" stroke="#ffd02f" strokeWidth="2" />
-              <text x="60" y="45" fill="#050036" fontSize="10" fontWeight="bold" textAnchor="middle">Area = L × W</text>
+              <rect x="10" y="15" width="100" height="50" rx="6" fill="url(#mathGrad)" stroke="#0070d1" strokeWidth="2" />
+              <text x="60" y="45" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">Area = L × W</text>
               <text x="60" y="8" fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">Length (12m)</text>
               <text x="-2" y="43" fill="white" fontSize="9" fontWeight="bold" textAnchor="middle" transform="rotate(-90 0 43)">Width (8m)</text>
             </svg>
@@ -267,8 +273,8 @@ function SyllabusVisuals({ subject }: { subject: string }) {
         <svg width="0" height="0" className="absolute">
           <defs>
             <linearGradient id="mathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffd02f" />
-              <stop offset="100%" stopColor="#f97316" />
+              <stop offset="0%" stopColor="#0070d1" />
+              <stop offset="100%" stopColor="#004d8d" />
             </linearGradient>
             <linearGradient id="mathGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#a855f7" />
@@ -286,16 +292,16 @@ function SyllabusVisuals({ subject }: { subject: string }) {
 
   if (subject === "Agriculture, Science & Technology") {
     return (
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-3 my-4">
-        <span className="text-[10px] text-white/40 font-black uppercase tracking-wider">Crop Rotation & Soil Science Models</span>
+      <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col items-center gap-3 my-4">
+        <span className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Crop Rotation & Soil Science Models</span>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6 w-full p-2">
           {/* Crop Rotation Wheel */}
           <div className="flex flex-col items-center gap-1.5">
             <svg width="120" height="120" className="overflow-visible">
               <circle cx="60" cy="60" r="45" fill="none" stroke="#22c55e" strokeWidth="2" strokeDasharray="5,3" />
               
-              <circle cx="60" cy="15" r="15" fill="#1e293b" stroke="#ffd02f" strokeWidth="2" />
-              <text x="60" y="18" fill="#ffd02f" fontSize="7" fontWeight="bold" textAnchor="middle">Maize</text>
+              <circle cx="60" cy="15" r="15" fill="#1e293b" stroke="#f5a623" strokeWidth="2" />
+              <text x="60" y="18" fill="#f5a623" fontSize="7" fontWeight="bold" textAnchor="middle">Maize</text>
 
               <circle cx="105" cy="60" r="15" fill="#1e293b" stroke="#22c55e" strokeWidth="2" />
               <text x="105" y="63" fill="#22c55e" fontSize="7" fontWeight="bold" textAnchor="middle">Beans</text>
@@ -325,11 +331,11 @@ function SyllabusVisuals({ subject }: { subject: string }) {
 
   if (subject === "English Language") {
     return (
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-3 my-4">
-        <span className="text-[10px] text-white/40 font-black uppercase tracking-wider">Formal Letter Layout Blocks</span>
-        <div className="w-full max-w-[260px] border border-white/10 p-4 rounded-xl bg-black/20 font-mono text-[8px] space-y-2 text-white/40">
-          <div className="text-right text-[#ffd02f]">Your Address (Sender) & Date</div>
-          <div className="text-left text-purple-400 mt-2">Recipient Address (Receiver)</div>
+      <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col items-center gap-3 my-4">
+        <span className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Formal Letter Layout Blocks</span>
+        <div className="w-full max-w-[260px] border border-white/10 p-4 rounded-lg bg-black/20 font-mono text-[8px] space-y-2 text-white/40">
+          <div className="text-right text-[#53b1ff]">Your Address (Sender) & Date</div>
+          <div className="text-left text-[#53b1ff] mt-2">Recipient Address (Receiver)</div>
           <div className="text-left font-bold text-white mt-1">Salutation: Dear Sir/Madam,</div>
           <div className="text-center border border-dashed border-white/20 p-2.5 text-white/80 my-1 font-sans">
             Subject: APPLICATION FOR...<br />
@@ -344,8 +350,8 @@ function SyllabusVisuals({ subject }: { subject: string }) {
 
   if (subject === "Social Science") {
     return (
-      <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-3 my-4">
-        <span className="text-[10px] text-white/40 font-black uppercase tracking-wider">Zimbabwe Heritage & Architecture</span>
+      <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col items-center gap-3 my-4">
+        <span className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Zimbabwe Heritage & Architecture</span>
         <div className="flex justify-center items-center gap-6 p-2 w-full">
           {/* Great Zimbabwe Wall representation */}
           <div className="flex flex-col items-center gap-1.5">
@@ -413,7 +419,6 @@ export default function Home() {
   const [checkpointQuestion, setCheckpointQuestion] = useState<string>("");
   const [checkpointAnswer, setCheckpointAnswer] = useState<string>("");
   const [checkpointInput, setCheckpointInput] = useState<string>("");
-  const [checkpointTriggered, setCheckpointTriggered] = useState<boolean>(false);
 
   // Exam answers
   const [paper1Answers, setPaper1Answers] = useState<Record<string, string>>({});
@@ -720,9 +725,9 @@ export default function Home() {
         setChamberTimer((prev) => {
           const next = prev - 1;
           
-          // Trigger attention check when timer is around 50% left
-          const targetTime = isDemoMode ? 60 : 2700; // 50% of 2 mins or 90 mins
-          if (next === targetTime && !checkpointTriggered && chamberPhase === "reading") {
+          // Unskippable attention checkpoint every 10 minutes of reading
+          const checkpointInterval = isDemoMode ? DEMO_CHECKPOINT_INTERVAL : CHECKPOINT_INTERVAL_SECONDS;
+          if (chamberPhase === "reading" && next > 0 && next % checkpointInterval === 0) {
             triggerCheckpoint();
           }
 
@@ -732,7 +737,7 @@ export default function Home() {
               // Automatically move to exam phase
               setChamberPhase("exam");
               setIsTimerRunning(true);
-              setChamberTimer(isDemoMode ? 60 : 5400); // Reset timer for exam (2m vs 90m)
+              setChamberTimer(isDemoMode ? DEMO_EXAM_SECONDS : EXAM_SECONDS); // 1m demo vs 50m practice
             } else if (chamberPhase === "exam") {
               // Automatically finish exam
               gradeExam();
@@ -746,11 +751,10 @@ export default function Home() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isTimerRunning, chamberTimer, chamberPhase, isDemoMode, checkpointTriggered]);
+  }, [isTimerRunning, chamberTimer, chamberPhase, isDemoMode]);
 
   const triggerCheckpoint = () => {
     setIsTimerRunning(false);
-    setCheckpointTriggered(true);
     
     // Choose a random simple arithmetic question
     const num1 = Math.floor(Math.random() * 8) + 2;
@@ -779,13 +783,12 @@ export default function Home() {
     setViolations(0);
     setShowCheatAlert(false);
     setMouseLeaveWarning(false);
-    setCheckpointTriggered(false);
     setCheckpointVisible(false);
     setPaper1Answers({});
     setPaper2Answers({});
     
-    // Reading phase duration: 2 minutes for demo, 30 minutes for real ZIMSEC Prep
-    setChamberTimer(isDemoMode ? 120 : 1800);
+    // Reading phase duration: 2 minutes for demo, 40 minutes for real ZIMSEC Prep
+    setChamberTimer(isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS);
     setChamberPhase("reading");
     setIsTimerRunning(false); // Student must click unblur button to start
   };
@@ -828,36 +831,36 @@ export default function Home() {
   }
 
   return (
-    <div ref={containerRef} className="w-full min-h-screen bg-[#030026] text-white relative pb-12">
+    <div ref={containerRef} className="w-full min-h-screen bg-black text-white relative pb-12">
       {/* Background visual graphics */}
-      <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-[#0a0047] to-[#030026] -z-10" />
-      <div className="absolute top-20 right-10 w-96 h-96 bg-purple-600/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-96 bg-gradient-to-b from-[#121314] to-black -z-10" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-[#0070d1]/5 rounded-full blur-[140px] pointer-events-none" />
 
       <main className="p-4 md:p-6 flex flex-col items-center justify-start max-w-5xl mx-auto gap-6 relative z-10">
         
         {/* ── Header Toolbar ── */}
         <div className="w-full bg-white/5 border border-white/10 py-3 px-6 rounded-full flex items-center justify-between text-xs font-bold anim-panel shadow-lg backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-8 bg-gradient-to-tr from-[#ffd02f] to-[#e6a200] rounded-full flex items-center justify-center text-[#050036] font-black text-sm">
+            <span className="w-8 h-8 bg-[#0070d1] rounded-full flex items-center justify-center text-white font-bold text-sm">
               {user.username.charAt(0).toUpperCase()}
             </span>
             <div className="flex flex-col">
-              <span className="font-black text-white text-sm">{user.username}</span>
-              <span className="text-[9px] text-[#ffd02f] font-bold tracking-wider uppercase">{levelName}</span>
+              <span className="font-bold text-white text-sm">{user.username}</span>
+              <span className="text-[9px] text-[#53b1ff] font-bold tracking-wider uppercase">{levelName}</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-orange-400 font-extrabold text-xs">🔥 {user.currentStreak} Streak</span>
+            <span className="text-orange-400 font-extrabold text-xs">{user.currentStreak} Day Streak</span>
             <span className="text-white/15">|</span>
             <button
               onClick={() => setShowDashboard((v) => !v)}
-              className={`px-4 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 showDashboard
-                  ? "bg-[#ffd02f] text-[#050036]"
+                  ? "bg-[#0070d1] text-white"
                   : "bg-white/8 text-white/70 hover:bg-white/15"
               }`}
             >
-              {showDashboard ? "Study Chamber →" : "📊 Parent Progress Centre"}
+              {showDashboard ? "Study Chamber →" : "Parent Progress Centre"}
             </button>
             <button
               onClick={logout}
@@ -895,27 +898,27 @@ export default function Home() {
             <div className="w-full flex flex-col gap-6 anim-panel">
               
               {/* Parent header */}
-              <div className="bg-[#0a0047] border border-white/10 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="bg-[#121314] border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <span className="text-[10px] text-[#ffd02f] font-black tracking-widest uppercase">Parental Control & Audit Panel</span>
-                  <h2 className="text-xl font-black text-white mt-1">ZIMSEC Academic Progress & Integrity Center</h2>
+                  <span className="text-[10px] text-[#53b1ff] font-bold tracking-widest uppercase">Parental Control & Audit Panel</span>
+                  <h2 className="text-xl font-bold text-white mt-1">ZIMSEC Academic Progress & Integrity Center</h2>
                   <p className="text-xs text-white/50 mt-1">Real-time supervision of test scores, focus compliance, and subject completion.</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl text-center min-w-[100px]">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Mastery Rate</span>
-                    <div className="text-lg font-black text-[#ffd02f] mt-0.5">{overallMasteryPercent}%</div>
+                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-lg text-center min-w-[100px]">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Mastery Rate</span>
+                    <div className="text-lg font-bold text-[#53b1ff] mt-0.5">{overallMasteryPercent}%</div>
                     <span className="text-[8px] text-slate-400 font-bold">{totalMastered}/{totalPossiblePapers} Papers</span>
                   </div>
-                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl text-center min-w-[100px]">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Average Score</span>
-                    <div className="text-lg font-black text-white mt-0.5">{averageScore}%</div>
+                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-lg text-center min-w-[100px]">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Average Score</span>
+                    <div className="text-lg font-bold text-white mt-0.5">{averageScore}%</div>
                     <span className="text-[8px] text-slate-400 font-bold">Over all sessions</span>
                   </div>
-                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl text-center min-w-[100px]">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Focus Health</span>
-                    <div className={`text-lg font-black mt-0.5 ${focusCompliancePercent >= 80 ? "text-emerald-400" : "text-rose-400"}`}>
+                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-lg text-center min-w-[100px]">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Focus Health</span>
+                    <div className={`text-lg font-bold mt-0.5 ${focusCompliancePercent >= 80 ? "text-emerald-400" : "text-rose-400"}`}>
                       {focusCompliancePercent}%
                     </div>
                     <span className="text-[8px] text-slate-400 font-bold">Secure Sessions</span>
@@ -925,35 +928,29 @@ export default function Home() {
 
               {/* Today's Learning Summary Box */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-1.5 relative overflow-hidden">
-                  <div className="absolute top-3 right-3 text-xl">📅</div>
-                  <span className="text-[9px] text-white/40 font-black uppercase">Date Studied</span>
-                  <div className="text-sm font-black text-white mt-1">{new Date().toDateString()}</div>
-                  <span className="text-[8px] text-[#ffd02f] font-bold">Daily target reset at midnight</span>
+                <div className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-1.5 relative overflow-hidden">
+                  <span className="text-[9px] text-white/40 font-bold uppercase">Date Studied</span>
+                  <div className="text-sm font-bold text-white mt-1">{new Date().toDateString()}</div>
+                  <span className="text-[8px] text-[#53b1ff] font-bold">Daily target reset at midnight</span>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-1.5 relative overflow-hidden">
-                  <div className="absolute top-3 right-3 text-xl">
-                    {passedToday ? "✅" : triesTodayCount > 0 ? "⏳" : "💤"}
-                  </div>
-                  <span className="text-[9px] text-white/40 font-black uppercase">Passed Today?</span>
-                  <div className={`text-sm font-black mt-1 uppercase ${passedToday ? "text-emerald-400" : triesTodayCount > 0 ? "text-amber-400" : "text-slate-400"}`}>
-                    {passedToday ? "Passed Paper! 🎉" : triesTodayCount > 0 ? "Tried, No Pass Yet" : "No Attempts Today"}
+                <div className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-1.5 relative overflow-hidden">
+                  <span className="text-[9px] text-white/40 font-bold uppercase">Passed Today?</span>
+                  <div className={`text-sm font-bold mt-1 uppercase ${passedToday ? "text-emerald-400" : triesTodayCount > 0 ? "text-amber-400" : "text-slate-400"}`}>
+                    {passedToday ? "Passed Paper!" : triesTodayCount > 0 ? "Tried, No Pass Yet" : "No Attempts Today"}
                   </div>
                   <span className="text-[8px] text-slate-400 font-bold">Requires {">= 70% & clean focus"}</span>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-1.5 relative overflow-hidden">
-                  <div className="absolute top-3 right-3 text-xl">🔥</div>
-                  <span className="text-[9px] text-white/40 font-black uppercase">Tries Today</span>
-                  <div className="text-lg font-black text-white mt-1">{triesTodayCount}</div>
+                <div className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-1.5 relative overflow-hidden">
+                  <span className="text-[9px] text-white/40 font-bold uppercase">Tries Today</span>
+                  <div className="text-lg font-bold text-white mt-1">{triesTodayCount}</div>
                   <span className="text-[8px] text-slate-400 font-bold">Practice repeats count as tries</span>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-1.5 relative overflow-hidden">
-                  <div className="absolute top-3 right-3 text-xl">🚨</div>
-                  <span className="text-[9px] text-white/40 font-black uppercase">Today's Focus Alerts</span>
-                  <div className={`text-lg font-black mt-1 ${violationsToday > 0 ? "text-rose-400 animate-pulse font-extrabold" : "text-emerald-400"}`}>
+                <div className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-1.5 relative overflow-hidden">
+                  <span className="text-[9px] text-white/40 font-bold uppercase">Today's Focus Alerts</span>
+                  <div className={`text-lg font-bold mt-1 ${violationsToday > 0 ? "text-rose-400 animate-pulse font-extrabold" : "text-emerald-400"}`}>
                     {violationsToday}
                   </div>
                   <span className="text-[8px] text-slate-400 font-bold">{violationsToday > 0 ? "Child lost window focus" : "Perfect study focus!"}</span>
@@ -961,9 +958,9 @@ export default function Home() {
               </div>
 
               {/* Subject Syllabus Mastery Grid */}
-              <div className="bg-white/5 border border-white/10 p-6 rounded-3xl shadow-xl flex flex-col gap-4">
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col gap-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h3 className="text-sm font-black text-[#ffd02f] flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
                     <span>Weekly Syllabus Mastery Breakdown</span>
                   </h3>
@@ -995,9 +992,9 @@ export default function Home() {
                       .reduce((max, log) => Math.max(max, log.percentage), 0);
 
                     return (
-                      <div key={sub} className="bg-black/20 p-4 rounded-2xl border border-white/5 flex flex-col gap-3">
+                      <div key={sub} className="bg-black/20 p-4 rounded-lg border border-white/5 flex flex-col gap-3">
                         <div className="flex justify-between items-center">
-                          <h4 className="text-xs font-black text-white">{sub}</h4>
+                          <h4 className="text-xs font-bold text-white">{sub}</h4>
                           <span className="text-[9px] text-white/40 font-bold">
                             {(p1Mastered ? 1 : 0) + (p2Mastered ? 1 : 0)}/2 Complete
                           </span>
@@ -1005,14 +1002,14 @@ export default function Home() {
                         
                         <div className="grid grid-cols-2 gap-3">
                           {/* Paper 1 check */}
-                          <div className={`p-3 rounded-xl border flex flex-col gap-1 ${
+                          <div className={`p-3 rounded-lg border flex flex-col gap-1 ${
                             p1Mastered 
                               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
                               : p1TriesTotal > 0 
                               ? "bg-amber-500/10 border-amber-500/20 text-amber-400" 
                               : "bg-white/5 border-white/10 text-white/30"
                           }`}>
-                            <div className="flex justify-between items-center text-[10px] font-black">
+                            <div className="flex justify-between items-center text-[10px] font-bold">
                               <span>Paper 1 (MCQ)</span>
                               <span>{p1Mastered ? "Passed" : p1TriesTotal > 0 ? "Retrying" : "Not Started"}</span>
                             </div>
@@ -1023,14 +1020,14 @@ export default function Home() {
                           </div>
 
                           {/* Paper 2 check */}
-                          <div className={`p-3 rounded-xl border flex flex-col gap-1 ${
+                          <div className={`p-3 rounded-lg border flex flex-col gap-1 ${
                             p2Mastered 
                               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
                               : p2TriesTotal > 0 
                               ? "bg-amber-500/10 border-amber-500/20 text-amber-400" 
                               : "bg-white/5 border-white/10 text-white/30"
                           }`}>
-                            <div className="flex justify-between items-center text-[10px] font-black">
+                            <div className="flex justify-between items-center text-[10px] font-bold">
                               <span>Paper 2 (Written)</span>
                               <span>{p2Mastered ? "Passed" : p2TriesTotal > 0 ? "Retrying" : "Not Started"}</span>
                             </div>
@@ -1047,8 +1044,8 @@ export default function Home() {
               </div>
 
               {/* Parent Audit Log List */}
-              <div className="bg-white/5 border border-white/10 p-6 rounded-3xl shadow-xl flex flex-col gap-4">
-                <h3 className="text-sm font-black text-[#ffd02f] flex items-center gap-2 border-b border-white/10 pb-2">
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl shadow-xl flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2 border-b border-white/10 pb-2">
                   <Calendar className="w-4 h-4" />
                   <span>Audit Trail: Detailed Learning Session History</span>
                 </h3>
@@ -1065,21 +1062,21 @@ export default function Home() {
                       return (
                         <div 
                           key={index} 
-                          className={`p-4 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
+                          className={`p-4 rounded-lg border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
                             hasCheated 
                               ? "bg-rose-500/5 border-rose-500/20" 
                               : log.passed 
                               ? "bg-emerald-500/5 border-emerald-500/15" 
                               : "bg-white/5 border-white/10"
-                          } ${isToday ? "border-[#ffd02f]/40" : ""}`}
+                          } ${isToday ? "border-[#0070d1]/40" : ""}`}
                         >
                           {/* Session Metadata */}
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-black text-white">{log.subject}</span>
+                              <span className="text-xs font-bold text-white">{log.subject}</span>
                               <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded font-bold text-white/60 uppercase">{log.paperType}</span>
                               {isToday && (
-                                <span className="text-[8px] bg-[#ffd02f]/20 border border-[#ffd02f]/30 px-1.5 py-0.5 rounded font-bold text-[#ffd02f] uppercase">
+                                <span className="text-[8px] bg-[#0070d1]/20 border border-[#0070d1]/30 px-1.5 py-0.5 rounded font-bold text-[#53b1ff] uppercase">
                                   Today
                                 </span>
                               )}
@@ -1091,8 +1088,8 @@ export default function Home() {
                           <div className="flex items-center gap-6">
                             {/* Score percentage */}
                             <div className="text-center">
-                              <span className="text-[9px] text-white/40 font-black uppercase">Percentage Score</span>
-                              <p className={`text-sm font-black mt-0.5 ${log.passed ? "text-emerald-400" : "text-rose-400"}`}>
+                              <span className="text-[9px] text-white/40 font-bold uppercase">Percentage Score</span>
+                              <p className={`text-sm font-bold mt-0.5 ${log.passed ? "text-emerald-400" : "text-rose-400"}`}>
                                 {log.percentage}%
                               </p>
                               <span className="text-[8px] text-white/30 block mt-0.5">({log.score}/{log.totalQuestions} items)</span>
@@ -1100,15 +1097,15 @@ export default function Home() {
 
                             {/* Focus Violations */}
                             <div className="text-center">
-                              <span className="text-[9px] text-white/40 font-black uppercase">Focus Violations</span>
-                              <p className={`text-sm font-black mt-0.5 ${log.violations > 0 ? "text-rose-400 font-extrabold" : "text-slate-300"}`}>
+                              <span className="text-[9px] text-white/40 font-bold uppercase">Focus Violations</span>
+                              <p className={`text-sm font-bold mt-0.5 ${log.violations > 0 ? "text-rose-400 font-extrabold" : "text-slate-300"}`}>
                                 {log.violations}
                               </p>
                               <span className="text-[8px] text-white/30 block mt-0.5">Tab/Window exits</span>
                             </div>
 
                             {/* Status Badge */}
-                            <div className={`px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase ${
+                            <div className={`px-2.5 py-1 rounded-lg border text-[9px] font-bold uppercase ${
                               hasCheated 
                                 ? "bg-rose-500/10 border-rose-500/20 text-rose-400"
                                 : log.passed 
@@ -1133,7 +1130,7 @@ export default function Home() {
                     setActivityLog([]);
                   }
                 }}
-                className="py-2.5 px-4 bg-white/5 border border-white/10 hover:bg-rose-500/10 hover:border-rose-500/20 rounded-xl text-xs font-black text-rose-400 self-end transition-all cursor-pointer"
+                className="py-2.5 px-4 bg-white/5 border border-white/10 hover:bg-rose-500/10 hover:border-rose-500/20 rounded-lg text-xs font-bold text-rose-400 self-end transition-all cursor-pointer"
               >
                 Clear Parental Audit Log
               </button>
@@ -1146,13 +1143,13 @@ export default function Home() {
           <div className="w-full flex flex-col gap-6">
 
             {/* Chamber Status Bar */}
-            <div className="w-full bg-[#0a0047] border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl">
+            <div className="w-full bg-[#121314] border border-white/10 p-4 rounded-lg flex items-center justify-between shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-500/10 border border-yellow-500/20 text-[#ffd02f] flex items-center justify-center rounded-xl font-bold">
-                  🎓
+                <div className="w-10 h-10 bg-[#0070d1]/10 border border-[#0070d1]/20 text-[#53b1ff] flex items-center justify-center rounded-lg font-bold">
+                  <BookOpen className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black tracking-wide">
+                  <h2 className="text-sm font-bold tracking-wide">
                     {chamberPhase === "setup" && "Chamber Setup Room"}
                     {chamberPhase === "reading" && "Phase 1: Focused Study Reading"}
                     {chamberPhase === "exam" && `Phase 2: ZIMSEC ${selectedPaper} Practise`}
@@ -1170,7 +1167,7 @@ export default function Home() {
               {/* Security Status Badge */}
               {(chamberPhase === "reading" || chamberPhase === "exam") && (
                 <div className="flex items-center gap-4">
-                  <div className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-[10px] font-black border ${
+                  <div className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-[10px] font-bold border ${
                     violations === 0 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" :
                     violations < 3 ? "bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse" :
                     "bg-rose-500/10 border-rose-500/30 text-rose-400 animate-bounce"
@@ -1184,7 +1181,7 @@ export default function Home() {
                   </div>
 
                   {/* Chamber Countdown clock */}
-                  <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10 text-[#ffd02f] font-mono text-lg font-bold">
+                  <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-lg border border-white/10 text-[#53b1ff] font-mono text-lg font-bold">
                     <Clock className="w-4 h-4" />
                     <span>{formatTime(chamberTimer)}</span>
                   </div>
@@ -1197,14 +1194,14 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 {/* Configuration details */}
-                <div className="md:col-span-2 bg-white/5 border border-white/10 p-6 rounded-3xl flex flex-col gap-6 shadow-xl">
-                  <h3 className="text-lg font-black text-[#ffd02f] border-b border-white/10 pb-2 flex items-center gap-2">
-                    <span>⚙️</span> Choose Your Study Syllabus
+                <div className="md:col-span-2 bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col gap-6 shadow-xl">
+                  <h3 className="text-lg font-bold text-[#53b1ff] border-b border-white/10 pb-2 flex items-center gap-2">
+                    Choose Your Study Syllabus
                   </h3>
 
                   {/* Subject Grid */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       {activeSubjects.length > 0 ? `Today's Scheduled Subjects (${currentDay})` : "Open Practice Subjects (Weekend Mode)"}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -1221,16 +1218,16 @@ export default function Home() {
                             key={sub}
                             disabled={isLocked}
                             onClick={() => setSelectedSubject(sub)}
-                            className={`p-3 text-xs font-bold rounded-xl text-left border transition-all ${
+                            className={`p-3 text-xs font-bold rounded-lg text-left border transition-all ${
                               isLocked
                                 ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-400/50 opacity-60 cursor-not-allowed"
                                 : selectedSubject === sub
-                                ? "bg-[#ffd02f]/10 border-[#ffd02f] text-[#ffd02f] shadow-lg shadow-yellow-500/5 cursor-pointer"
+                                ? "bg-[#0070d1]/10 border-[#0070d1] text-[#53b1ff] cursor-pointer"
                                 : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 cursor-pointer"
                             }`}
                           >
                             <div className="flex justify-between items-center w-full">
-                              <span>📚 {sub}</span>
+                              <span>{sub}</span>
                               {isAllMastered && (
                                 <span className="text-[9px] bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-400 border border-emerald-500/30">
                                   {isLocked ? "Mastered ✓" : "Polish Mode"}
@@ -1246,8 +1243,8 @@ export default function Home() {
                   {/* Paper Select */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Exam Format</label>
-                      <div className="flex bg-white/5 rounded-xl p-1 border border-white/10">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Exam Format</label>
+                      <div className="flex bg-white/5 rounded-lg p-1 border border-white/10">
                         {(["Paper 1", "Paper 2"] as const).map((paper) => {
                           const isPaperMastered = !!masteredPapers[`${selectedSubject}:${paper}`];
                           const isSaturday = currentDay === "Saturday";
@@ -1258,11 +1255,11 @@ export default function Home() {
                               key={paper}
                               disabled={isLocked}
                               onClick={() => setSelectedPaper(paper)}
-                              className={`flex-1 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                                 isLocked
                                   ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-400/50 opacity-60 cursor-not-allowed"
                                   : selectedPaper === paper
-                                  ? "bg-[#ffd02f] text-[#050036]"
+                                  ? "bg-[#0070d1] text-white"
                                   : "text-white/60 hover:text-white"
                               }`}
                             >
@@ -1275,13 +1272,13 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Session Duration</label>
-                      <div className="flex bg-white/5 rounded-xl p-1 border border-white/10">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Session Duration</label>
+                      <div className="flex bg-white/5 rounded-lg p-1 border border-white/10">
                         <button
                           onClick={() => setIsDemoMode(false)}
-                          className={`flex-1 py-2 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             !isDemoMode
-                              ? "bg-[#ffd02f] text-[#050036]"
+                              ? "bg-[#0070d1] text-white"
                               : "text-white/60 hover:text-white"
                           }`}
                         >
@@ -1289,9 +1286,9 @@ export default function Home() {
                         </button>
                         <button
                           onClick={() => setIsDemoMode(true)}
-                          className={`flex-1 py-2 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             isDemoMode
-                              ? "bg-[#ffd02f] text-[#050036]"
+                              ? "bg-[#0070d1] text-white"
                               : "text-white/60 hover:text-white"
                           }`}
                         >
@@ -1303,27 +1300,27 @@ export default function Home() {
 
                   <button
                     onClick={startStudySession}
-                    className="w-full py-4 bg-gradient-to-r from-[#ffd02f] to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 text-[#050036] font-black rounded-xl text-sm transition-all cursor-pointer shadow-xl shadow-yellow-500/10 uppercase tracking-widest mt-4"
+                    className="w-full py-4 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-lg text-sm transition-all cursor-pointer uppercase tracking-widest mt-4"
                   >
-                    Enter Study Chamber 🔒
+                    Enter Study Chamber
                   </button>
                 </div>
 
                 {/* Socratic AI Homework Helper Box */}
-                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-3xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
-                  <h3 className="text-sm font-black text-[#ffd02f] flex items-center gap-2 border-b border-white/10 pb-2">
-                    <Sparkles className="w-4 h-4" />
+                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
+                  <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2 border-b border-white/10 pb-2">
+                    <MessageSquare className="w-4 h-4" />
                     <span>Socratic Homework Helper</span>
                   </h3>
 
                   {/* Chat bubbles */}
-                  <div className="flex-1 overflow-y-auto p-2 bg-black/20 rounded-xl space-y-3 flex flex-col min-h-0 text-xs">
+                  <div className="flex-1 overflow-y-auto p-2 bg-black/20 rounded-lg space-y-3 flex flex-col min-h-0 text-xs">
                     {chatHistory.map((msg, i) => (
                       <div 
                         key={i} 
-                        className={`p-2.5 rounded-xl max-w-[85%] leading-relaxed ${
+                        className={`p-2.5 rounded-lg max-w-[85%] leading-relaxed ${
                           msg.sender === "student" 
-                            ? "bg-[#ffd02f]/10 border border-[#ffd02f]/20 text-[#ffd02f] self-end"
+                            ? "bg-[#0070d1]/10 border border-[#0070d1]/20 text-[#53b1ff] self-end"
                             : "bg-white/5 border border-white/10 text-white/90 self-start"
                         }`}
                       >
@@ -1331,7 +1328,7 @@ export default function Home() {
                       </div>
                     ))}
                     {chatLoading && (
-                      <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl self-start text-white/50 animate-pulse">
+                      <div className="bg-white/5 border border-white/10 p-2.5 rounded-lg self-start text-white/50 animate-pulse">
                         Tutor is thinking...
                       </div>
                     )}
@@ -1345,12 +1342,12 @@ export default function Home() {
                       placeholder="Ask homework query..."
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      className="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-[#ffd02f]"
+                      className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#0070d1]"
                     />
                     <button
                       type="submit"
                       disabled={chatLoading}
-                      className="p-2.5 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] rounded-xl flex items-center justify-center transition-all cursor-pointer"
+                      className="p-2.5 bg-[#0070d1] hover:bg-[#0064b7] text-white rounded-lg flex items-center justify-center transition-all cursor-pointer"
                     >
                       <Send className="w-3.5 h-3.5" />
                     </button>
@@ -1365,7 +1362,7 @@ export default function Home() {
                 
                 {/* Main reading content */}
                 <div 
-                  className="md:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-6 relative overflow-hidden shadow-2xl flex flex-col gap-6"
+                  className="md:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6 relative overflow-hidden shadow-2xl flex flex-col gap-6"
                   onContextMenu={(e) => e.preventDefault()}
                   style={{ userSelect: 'none' }}
                 >
@@ -1373,23 +1370,23 @@ export default function Home() {
                   {/* Control Panel Header */}
                   <div className="flex items-center justify-between border-b border-white/10 pb-4">
                     <div>
-                      <span className="text-[10px] text-[#ffd02f] font-black tracking-widest uppercase">ZIMSEC Syllabus Revision Guide</span>
-                      <h3 className="text-xl font-black mt-1">{selectedSubject} Overview</h3>
+                      <span className="text-[10px] text-[#53b1ff] font-bold tracking-widest uppercase">ZIMSEC Syllabus Revision Guide</span>
+                      <h3 className="text-xl font-bold mt-1">{selectedSubject} Overview</h3>
                     </div>
 
                     {!isTimerRunning && (
                       <button
                         onClick={() => setIsTimerRunning(true)}
-                        className="px-6 py-3 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] font-black rounded-full text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-yellow-500/10 uppercase tracking-wider transition-all"
+                        className="px-6 py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
                       >
-                        <Play className="w-3.5 h-3.5 fill-[#050036]" />
+                        <Play className="w-3.5 h-3.5 fill-white" />
                         Start Reading Countdown
                       </button>
                     )}
                     {isTimerRunning && (
                       <button
                         onClick={() => setIsTimerRunning(false)}
-                        className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/15 font-black rounded-full text-xs flex items-center gap-2 cursor-pointer transition-all"
+                        className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/15 font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer transition-all"
                       >
                         <Pause className="w-3.5 h-3.5 fill-white" />
                         Pause Reading
@@ -1398,7 +1395,7 @@ export default function Home() {
                   </div>
 
                   {/* The Reading Text with dynamic Blur depending on timer activity */}
-                  <div className="relative min-h-[300px] bg-black/20 rounded-2xl p-6 border border-white/5">
+                  <div className="relative min-h-[300px] bg-black/20 rounded-lg p-6 border border-white/5">
                     <div className={`transition-all duration-300 text-slate-300 leading-relaxed text-sm ${
                       isTimerRunning ? "blur-0 select-none pointer-events-none" : "blur-lg select-none pointer-events-none"
                     }`}>
@@ -1411,15 +1408,15 @@ export default function Home() {
 
                     {/* Blur Overlay when Timer is Paused */}
                     {!isTimerRunning && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-2xl p-6 text-center z-20 backdrop-blur-md">
-                        <Lock className="w-12 h-12 text-[#ffd02f] mb-3 animate-pulse" />
-                        <h4 className="text-base font-black text-white">Study Material Locked</h4>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg p-6 text-center z-20 backdrop-blur-md">
+                        <Lock className="w-12 h-12 text-[#53b1ff] mb-3 animate-pulse" />
+                        <h4 className="text-base font-bold text-white">Study Material Locked</h4>
                         <p className="text-xs text-white/50 max-w-xs mt-1">
                           Click the &quot;Start Reading Countdown&quot; button to unblur and reveal the syllabus material.
                         </p>
                         <button
                           onClick={() => setIsTimerRunning(true)}
-                          className="mt-4 px-6 py-2.5 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] font-black rounded-full text-xs cursor-pointer shadow-lg shadow-yellow-500/10 uppercase tracking-widest"
+                          className="mt-4 px-6 py-2.5 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-xs cursor-pointer uppercase tracking-widest"
                         >
                           Reveal Material
                         </button>
@@ -1429,19 +1426,19 @@ export default function Home() {
                 </div>
 
                 {/* Socratic AI Homework Helper Box during Reading */}
-                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-3xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
-                  <h3 className="text-sm font-black text-[#ffd02f] flex items-center gap-2 border-b border-white/10 pb-2">
-                    <Sparkles className="w-4 h-4" />
+                <div className="md:col-span-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-3 shadow-xl h-[480px] overflow-hidden">
+                  <h3 className="text-sm font-bold text-[#53b1ff] flex items-center gap-2 border-b border-white/10 pb-2">
+                    <MessageSquare className="w-4 h-4" />
                     <span>Socratic Homework Helper</span>
                   </h3>
 
-                  <div className="flex-1 overflow-y-auto p-2 bg-black/20 rounded-xl space-y-3 flex flex-col min-h-0 text-xs">
+                  <div className="flex-1 overflow-y-auto p-2 bg-black/20 rounded-lg space-y-3 flex flex-col min-h-0 text-xs">
                     {chatHistory.map((msg, i) => (
                       <div 
                         key={i} 
-                        className={`p-2.5 rounded-xl max-w-[85%] leading-relaxed ${
+                        className={`p-2.5 rounded-lg max-w-[85%] leading-relaxed ${
                           msg.sender === "student" 
-                            ? "bg-[#ffd02f]/10 border border-[#ffd02f]/20 text-[#ffd02f] self-end"
+                            ? "bg-[#0070d1]/10 border border-[#0070d1]/20 text-[#53b1ff] self-end"
                             : "bg-white/5 border border-white/10 text-white/90 self-start"
                         }`}
                       >
@@ -1449,7 +1446,7 @@ export default function Home() {
                       </div>
                     ))}
                     {chatLoading && (
-                      <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl self-start text-white/50 animate-pulse">
+                      <div className="bg-white/5 border border-white/10 p-2.5 rounded-lg self-start text-white/50 animate-pulse">
                         Tutor is thinking...
                       </div>
                     )}
@@ -1462,12 +1459,12 @@ export default function Home() {
                       placeholder="Ask homework query..."
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      className="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-[#ffd02f]"
+                      className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#0070d1]"
                     />
                     <button
                       type="submit"
                       disabled={chatLoading}
-                      className="p-2.5 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] rounded-xl flex items-center justify-center transition-all cursor-pointer"
+                      className="p-2.5 bg-[#0070d1] hover:bg-[#0064b7] text-white rounded-lg flex items-center justify-center transition-all cursor-pointer"
                     >
                       <Send className="w-3.5 h-3.5" />
                     </button>
@@ -1479,7 +1476,7 @@ export default function Home() {
             {/* ── PHASE 2: EXAM QUIZ ── */}
             {chamberPhase === "exam" && (
               <div 
-                className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col gap-6"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-6"
                 onContextMenu={(e) => e.preventDefault()}
                 style={{ userSelect: 'none' }}
               >
@@ -1487,13 +1484,13 @@ export default function Home() {
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div>
-                    <span className="text-[10px] text-[#ffd02f] font-black tracking-widest uppercase">ZIMSEC PRACTICE TEST</span>
-                    <h3 className="text-xl font-black mt-1">{selectedSubject} — {selectedPaper}</h3>
+                    <span className="text-[10px] text-[#53b1ff] font-bold tracking-widest uppercase">ZIMSEC PRACTICE TEST</span>
+                    <h3 className="text-xl font-bold mt-1">{selectedSubject} — {selectedPaper}</h3>
                   </div>
 
                   <button
                     onClick={gradeExam}
-                    className="px-6 py-3 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] font-black rounded-full text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-yellow-500/10 uppercase tracking-wider transition-all"
+                    className="px-6 py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
                   >
                     Submit Practice Paper
                   </button>
@@ -1503,9 +1500,9 @@ export default function Home() {
                 {selectedPaper === "Paper 1" && (
                   <div className="flex flex-col gap-6">
                     {materials.quiz.map((q, idx) => (
-                      <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-4">
+                      <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-black flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">
                             {idx + 1}
                           </span>
                           <h4 className="text-sm font-bold text-white leading-relaxed">{q.question}</h4>
@@ -1520,9 +1517,9 @@ export default function Home() {
                               <button
                                 key={opt}
                                 onClick={() => setPaper1Answers(prev => ({ ...prev, [q.id]: optionLetter }))}
-                                className={`p-3.5 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
+                                className={`p-3.5 rounded-lg border text-left text-xs font-bold transition-all cursor-pointer ${
                                   isSelected 
-                                    ? "bg-[#ffd02f]/10 border-[#ffd02f] text-[#ffd02f] shadow-md shadow-yellow-500/5"
+                                    ? "bg-[#0070d1]/10 border-[#0070d1] text-[#53b1ff]"
                                     : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
                                 }`}
                               >
@@ -1540,9 +1537,9 @@ export default function Home() {
                 {selectedPaper === "Paper 2" && (
                   <div className="flex flex-col gap-6">
                     {materials.paper2.map((q, idx) => (
-                      <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col gap-4">
+                      <div key={q.id} className="bg-white/5 border border-white/10 p-5 rounded-lg flex flex-col gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-black flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">
                             {idx + 1}
                           </span>
                           <h4 className="text-sm font-bold text-white leading-relaxed">{q.question}</h4>
@@ -1553,7 +1550,7 @@ export default function Home() {
                           value={paper2Answers[q.id] || ""}
                           onChange={(e) => setPaper2Answers(prev => ({ ...prev, [q.id]: e.target.value }))}
                           rows={4}
-                          className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-[#ffd02f] transition-all resize-none"
+                          className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#0070d1] transition-all resize-none"
                         />
                       </div>
                     ))}
@@ -1564,21 +1561,23 @@ export default function Home() {
 
             {/* ── PHASE 3: CERTIFICATE RESULTS ── */}
             {chamberPhase === "results" && examReport && (
-              <div className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col gap-6">
+              <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-6">
                 
                 {/* Result header */}
                 <div className="text-center py-6 border-b border-white/10">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 rounded-full mb-3">
-                    <span className="text-4xl">
-                      {examReport.passed ? "🏆" : "📚"}
-                    </span>
+                    {examReport.passed ? (
+                      <Trophy className="w-8 h-8 text-[#f5a623]" />
+                    ) : (
+                      <BookOpen className="w-8 h-8 text-[#53b1ff]" />
+                    )}
                   </div>
                   
-                  <span className="text-[10px] text-white/40 font-black tracking-widest uppercase">ZIMSEC PERFORMANCE AUDIT</span>
-                  <h3 className="text-2xl font-black mt-1">Practice Complete!</h3>
+                  <span className="text-[10px] text-white/40 font-bold tracking-widest uppercase">ZIMSEC PERFORMANCE AUDIT</span>
+                  <h3 className="text-2xl font-light mt-1">Practice Complete!</h3>
 
                   {/* Status Banner */}
-                  <div className={`mt-4 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-black border ${
+                  <div className={`mt-4 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold border ${
                     examReport.passed 
                       ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
                       : "bg-rose-500/10 border-rose-500/30 text-rose-400"
@@ -1586,12 +1585,12 @@ export default function Home() {
                     {examReport.passed ? (
                       <>
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>🌟 YOU DID GREAT! (Passed Practice)</span>
+                        <span>YOU DID GREAT! (Passed Practice)</span>
                       </>
                     ) : (
                       <>
                         <XCircle className="w-4 h-4" />
-                        <span>❌ YOU HAVE FAILED (Needs Improvement)</span>
+                        <span>YOU HAVE FAILED (Needs Improvement)</span>
                       </>
                     )}
                   </div>
@@ -1599,26 +1598,26 @@ export default function Home() {
 
                 {/* Score Grid stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Percentage Marks</span>
-                    <p className={`text-3xl font-black mt-1 ${examReport.passed ? "text-emerald-400" : "text-rose-400"}`}>
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-lg text-center">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Percentage Marks</span>
+                    <p className={`text-3xl font-light mt-1 ${examReport.passed ? "text-emerald-400" : "text-rose-400"}`}>
                       {examReport.percentage}%
                     </p>
                     <span className="text-[10px] text-white/30 mt-1 block">Score: {examReport.score} / {examReport.totalQuestions}</span>
                   </div>
 
-                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Anti-Cheat Audit</span>
-                    <p className={`text-3xl font-black mt-1 ${!examReport.cheated ? "text-emerald-400" : "text-rose-400"}`}>
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-lg text-center">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Anti-Cheat Audit</span>
+                    <p className={`text-3xl font-light mt-1 ${!examReport.cheated ? "text-emerald-400" : "text-rose-400"}`}>
                       {!examReport.cheated ? "PASSED" : "FAILED"}
                     </p>
                     <span className="text-[10px] text-white/30 mt-1 block">{violations} Cheat Alerts triggered</span>
                   </div>
 
-                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
-                    <span className="text-[9px] text-white/40 font-black uppercase">Rewards status</span>
-                    <p className="text-3xl font-black mt-1 text-[#ffd02f]">
-                      {examReport.passed ? "+10m 🪙" : "None"}
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-lg text-center">
+                    <span className="text-[9px] text-white/40 font-bold uppercase">Rewards status</span>
+                    <p className="text-3xl font-light mt-1 text-[#53b1ff]">
+                      {examReport.passed ? "+10m" : "None"}
                     </p>
                     <span className="text-[10px] text-white/30 mt-1 block">{examReport.passed ? "Earned Screen Tokens" : "Pass required"}</span>
                   </div>
@@ -1626,10 +1625,10 @@ export default function Home() {
 
                 {/* Security warning if cheated */}
                 {examReport.cheated && (
-                  <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-2xl flex items-center gap-3">
+                  <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-lg flex items-center gap-3">
                     <AlertTriangle className="w-6 h-6 text-rose-400 flex-shrink-0" />
                     <div>
-                      <h4 className="text-xs font-black text-rose-400 uppercase">Cheating Flag Activated</h4>
+                      <h4 className="text-xs font-bold text-rose-400 uppercase">Cheating Flag Activated</h4>
                       <p className="text-[11px] text-white/70 mt-0.5">
                         This session registered {violations} focus violations (leaving the browser window or clicking onto other apps). The score has been flagged for parent review.
                       </p>
@@ -1639,16 +1638,16 @@ export default function Home() {
 
                 {/* Detailed Marks evaluation list */}
                 <div className="flex flex-col gap-4 mt-2">
-                  <h4 className="text-sm font-black text-white/80">Question-by-Question Marking Report</h4>
+                  <h4 className="text-sm font-bold text-white/80">Question-by-Question Marking Report</h4>
 
                   {examReport.details.map((item, idx) => (
-                    <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col gap-3">
+                    <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-lg flex flex-col gap-3">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-white/40">{idx + 1}.</span>
                           <p className="text-xs font-bold text-white">{item.question}</p>
                         </div>
-                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${
+                        <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
                           item.isCorrect 
                             ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
                             : "bg-rose-500/10 border-rose-500/20 text-rose-400"
@@ -1657,19 +1656,19 @@ export default function Home() {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-black/20 p-3 rounded-xl">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-black/20 p-3 rounded-lg">
                         <div>
-                          <span className="text-[9px] text-white/30 font-black uppercase">Student&apos;s Answer</span>
+                          <span className="text-[9px] text-white/30 font-bold uppercase">Student&apos;s Answer</span>
                           <p className="text-white font-semibold mt-0.5 whitespace-pre-wrap">{item.studentAnswer}</p>
                         </div>
                         {selectedPaper === "Paper 1" ? (
                           <div>
-                            <span className="text-[9px] text-white/30 font-black uppercase">Correct Option</span>
-                            <p className="text-[#ffd02f] font-semibold mt-0.5">{item.correctAnswer}</p>
+                            <span className="text-[9px] text-white/30 font-bold uppercase">Correct Option</span>
+                            <p className="text-[#53b1ff] font-semibold mt-0.5">{item.correctAnswer}</p>
                           </div>
                         ) : (
                           <div>
-                            <span className="text-[9px] text-white/30 font-black uppercase">Model Examiner Answer Keys</span>
+                            <span className="text-[9px] text-white/30 font-bold uppercase">Model Examiner Answer Keys</span>
                             <p className="text-emerald-400 font-semibold mt-0.5 whitespace-pre-wrap">{item.sampleAnswer}</p>
                             {item.keywordsMissed && item.keywordsMissed.length > 0 && (
                               <p className="text-[10px] text-rose-400 mt-1 font-bold">
@@ -1681,7 +1680,7 @@ export default function Home() {
                       </div>
 
                       <p className="text-[11px] text-white/50 leading-relaxed bg-white/5 p-2.5 rounded-lg">
-                        <strong>💡 Explanation:</strong> {item.explanation}
+                        <strong>Explanation:</strong> {item.explanation}
                       </p>
                     </div>
                   ))}
@@ -1691,21 +1690,21 @@ export default function Home() {
                 {examReport.passed ? (
                   <button
                     onClick={resetToSetup}
-                    className="w-full py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer text-center shadow-lg shadow-emerald-500/10"
+                    className="w-full py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-lg text-xs uppercase tracking-widest transition-all cursor-pointer text-center shadow-lg shadow-emerald-500/10"
                   >
-                    Claim Reward & Lock In Mastery 🏆
+                    Claim Reward & Lock In Mastery
                   </button>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={startStudySession}
-                      className="flex-1 py-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer text-center shadow-lg shadow-rose-500/10"
+                      className="flex-1 py-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold rounded-lg text-xs uppercase tracking-widest transition-all cursor-pointer text-center shadow-lg shadow-rose-500/10"
                     >
-                      Retake Chamber Prep 🔄 (Repeat Test)
+                      Retake Chamber Prep (Repeat Test)
                     </button>
                     <button
                       onClick={resetToSetup}
-                      className="py-4 px-6 bg-white/10 hover:bg-white/15 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer text-center border border-white/10"
+                      className="py-4 px-6 bg-white/10 hover:bg-white/15 text-white font-bold rounded-lg text-xs uppercase tracking-widest transition-all cursor-pointer text-center border border-white/10"
                     >
                       Return to Setup
                     </button>
@@ -1719,18 +1718,18 @@ export default function Home() {
         {/* ── Anti-Cheat Interruption Overlay ── */}
         {showCheatAlert && (
           <div className="fixed inset-0 bg-black/85 flex flex-col items-center justify-center z-50 p-4 backdrop-blur-md">
-            <div className="max-w-md w-full bg-[#0a0047] border border-rose-500/30 p-8 rounded-3xl text-center shadow-2xl relative overflow-hidden">
+            <div className="max-w-md w-full bg-[#121314] border border-rose-500/30 p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 inset-x-0 h-1.5 bg-rose-500" />
               
               <ShieldAlert className="w-16 h-16 text-rose-400 mx-auto mb-4 animate-bounce" />
-              <h2 className="text-2xl font-black text-white mb-2">SECURITY PROTOCOL INTERRUPTED</h2>
+              <h2 className="text-2xl font-light text-white mb-2">SECURITY PROTOCOL INTERRUPTED</h2>
               <p className="text-white/60 text-sm mb-6 leading-relaxed">
                 Focus Chamber detected you left the browser window or changed tabs. This violation has been added to the security log.
               </p>
 
-              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl mb-6">
-                <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest block mb-1">Focus Violations Recorded</span>
-                <span className="text-2xl font-black text-white">{violations}</span>
+              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-lg mb-6">
+                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1">Focus Violations Recorded</span>
+                <span className="text-2xl font-light text-white">{violations}</span>
               </div>
 
               <button
@@ -1738,7 +1737,7 @@ export default function Home() {
                   setShowCheatAlert(false);
                   setIsTimerRunning(true);
                 }}
-                className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-black rounded-xl text-xs cursor-pointer shadow-lg shadow-rose-500/20 uppercase tracking-wider transition-all"
+                className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold rounded-lg text-xs cursor-pointer shadow-lg shadow-rose-500/20 uppercase tracking-wider transition-all"
               >
                 Resume Focus Session
               </button>
@@ -1749,13 +1748,13 @@ export default function Home() {
         {/* ── Attention Verification Checkpoint Overlay ── */}
         {checkpointVisible && (
           <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-4 backdrop-blur-lg">
-            <div className="max-w-sm w-full bg-[#0a0047] border border-yellow-500/30 p-6 rounded-3xl text-center shadow-2xl">
-              <span className="text-3xl mb-3 block">👀</span>
-              <h3 className="text-lg font-black text-white mb-1">Attention Check!</h3>
+            <div className="max-w-sm w-full bg-[#121314] border border-[#0070d1]/30 p-6 rounded-2xl text-center shadow-2xl">
+              <Eye className="w-8 h-8 text-[#53b1ff] mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-white mb-1">Attention Check!</h3>
               <p className="text-xs text-white/50 mb-4">Are you still reading? Solve this simple task to prove you are active:</p>
 
               <form onSubmit={handleCheckpointSubmit} className="flex flex-col gap-3">
-                <div className="bg-black/30 border border-white/10 p-4 rounded-xl text-base font-black text-[#ffd02f]">
+                <div className="bg-black/30 border border-white/10 p-4 rounded-lg text-base font-bold text-[#53b1ff]">
                   {checkpointQuestion}
                 </div>
 
@@ -1765,12 +1764,12 @@ export default function Home() {
                   value={checkpointInput}
                   onChange={(e) => setCheckpointInput(e.target.value)}
                   autoFocus
-                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-center text-sm outline-none focus:border-[#ffd02f] transition-all"
+                  className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white font-bold text-center text-sm outline-none focus:border-[#0070d1] transition-all"
                 />
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#ffd02f] hover:bg-yellow-400 text-[#050036] font-black rounded-xl text-xs uppercase tracking-widest cursor-pointer"
+                  className="w-full py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-lg text-xs uppercase tracking-widest cursor-pointer"
                 >
                   Verify Attention
                 </button>
