@@ -1,26 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;850&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080050;
+  --foreground: #f1f5f9;
+  --miro-yellow: #ffd02f;
+  --miro-yellow-deep: #e6b825;
+  --brand-blue: #4d9fff;
+
+  /* Sticky Note Pastel Palette — kept vivid for card contrast on dark bg */
+  --pastel-yellow: #fffdf0;
+  --pastel-coral: #fff5f0;
+  --pastel-teal: #f0fdfa;
+  --pastel-rose: #fff0f5;
+  --pastel-mint: #f0fdf4;
+
+  --hairline: rgba(255,255,255,0.08);
+  --hairline-soft: rgba(255,255,255,0.04);
+  --hairline-strong: rgba(255,255,255,0.12);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-yellow: var(--miro-yellow);
+  --color-brand-blue: var(--brand-blue);
+  
+  --color-pastel-yellow: var(--pastel-yellow);
+  --color-pastel-coral: var(--pastel-coral);
+  --color-pastel-teal: var(--pastel-teal);
+  --color-pastel-rose: var(--pastel-rose);
+  --color-pastel-mint: var(--pastel-mint);
+  
+  --font-sans: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background-color: #050036;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Miro Board Styling */
+.miro-canvas {
+  background-color: var(--background);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.sticky-note-yellow {
+  background-color: var(--pastel-yellow);
+  border: 1px solid rgba(255, 208, 47, 0.3);
+  box-shadow: 0 4px 8px rgba(255, 208, 47, 0.05);
+}
+
+.sticky-note-coral {
+  background-color: var(--pastel-coral);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.05);
+}
+
+.sticky-note-teal {
+  background-color: var(--pastel-teal);
+  border: 1px solid rgba(20, 184, 166, 0.15);
+  box-shadow: 0 4px 8px rgba(20, 184, 166, 0.05);
+}
+
+.sticky-note-rose {
+  background-color: var(--pastel-rose);
+  border: 1px solid rgba(236, 72, 153, 0.15);
+  box-shadow: 0 4px 8px rgba(236, 72, 153, 0.05);
+}
+
+.sticky-note-mint {
+  background-color: var(--pastel-mint);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.05);
+}
+
+/* Button & pill styles */
+.button-primary {
+  background-color: #050036;
+  color: #ffffff;
+  font-weight: 500;
+  transition: all 150ms ease-in-out;
+}
+
+.button-primary:hover {
+  background-color: #1a1555;
+  transform: translateY(-1px);
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--hairline-strong);
+  font-weight: 500;
+  transition: all 150ms ease-in-out;
+}
+
+.button-secondary:hover {
+  background-color: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* ── Scroll & entrance animation keyframes ── */
+@keyframes animationIn {
+  from { opacity: 0; transform: translateY(30px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* Base state — hidden until JS adds .animated */
+.animate-on-scroll {
+  opacity: 0;
+}
+.animate-on-scroll.animated {
+  animation: animationIn 0.7s ease-out both;
+}
+.animate-on-scroll.anim-left.animated {
+  animation: slideInLeft 0.6s ease-out both;
+}
+.animate-on-scroll.anim-right.animated {
+  animation: slideInRight 0.6s ease-out both;
+}
+.animate-on-scroll.anim-scale.animated {
+  animation: scaleIn 0.5s ease-out both;
+}
+
+/* 3D Card Flip CSS Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
