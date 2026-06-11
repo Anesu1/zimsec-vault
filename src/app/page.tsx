@@ -437,7 +437,7 @@ export default function Home() {
 
   const [selectedSubject, setSelectedSubject] = useState<string>("Mathematics");
   const [selectedPaper, setSelectedPaper] = useState<"Paper 1" | "Paper 2">("Paper 1");
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(false); // Default to Standard 10-min Mode
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false); // Default to standard mode
 
   const materials = curriculumData[selectedSubject] || curriculumData["Mathematics"];
   const getReadingMaterial = () => {
@@ -479,6 +479,10 @@ export default function Home() {
   // Dashboard UI toggle
   const [showDashboard, setShowDashboard] = useState<boolean>(false);
   const [isMobileChatOpen, setIsMobileChatOpen] = useState<boolean>(false);
+
+  const maxReadingSeconds = isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS;
+  const elapsedReadingSeconds = maxReadingSeconds - chamberTimer;
+  const canSkipReading = isDemoMode ? (elapsedReadingSeconds >= 60) : (elapsedReadingSeconds >= 300);
 
   // Parent audit and activity log state
   const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
@@ -855,6 +859,13 @@ export default function Home() {
     setChamberTimer(isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS);
     setChamberPhase("reading");
     setIsTimerRunning(false); // Student must click unblur button to start
+  };
+
+  const skipToExam = () => {
+    setIsTimerRunning(false);
+    setChamberPhase("exam");
+    setIsTimerRunning(true);
+    setChamberTimer(isDemoMode ? DEMO_EXAM_SECONDS : EXAM_SECONDS);
   };
 
   // Go home to the setup room and fully reset the session state
@@ -1365,7 +1376,7 @@ export default function Home() {
                               : "text-white/60 hover:text-white"
                           }`}
                         >
-                          Standard (10m)
+                          Exam (90m)
                         </button>
                         <button
                           onClick={() => setIsDemoMode(true)}
@@ -1375,7 +1386,7 @@ export default function Home() {
                               : "text-white/60 hover:text-white"
                           }`}
                         >
-                          Demo (2m)
+                          Quick (2m)
                         </button>
                       </div>
                     </div>
@@ -1457,24 +1468,34 @@ export default function Home() {
                       <h3 className="text-xl font-bold mt-1">{selectedSubject} Overview</h3>
                     </div>
 
-                    {!isTimerRunning && (
-                      <button
-                        onClick={() => setIsTimerRunning(true)}
-                        className="px-6 py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
-                      >
-                        <Play className="w-3.5 h-3.5 fill-white" />
-                        Start Reading Countdown
-                      </button>
-                    )}
-                    {isTimerRunning && (
-                      <button
-                        onClick={() => setIsTimerRunning(false)}
-                        className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/15 font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer transition-all"
-                      >
-                        <Pause className="w-3.5 h-3.5 fill-white" />
-                        Pause Reading
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {!isTimerRunning && (
+                        <button
+                          onClick={() => setIsTimerRunning(true)}
+                          className="px-6 py-3 bg-[#0070d1] hover:bg-[#0064b7] text-white font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
+                        >
+                          <Play className="w-3.5 h-3.5 fill-white" />
+                          Start Reading
+                        </button>
+                      )}
+                      {isTimerRunning && (
+                        <button
+                          onClick={() => setIsTimerRunning(false)}
+                          className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/15 font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer transition-all"
+                        >
+                          <Pause className="w-3.5 h-3.5 fill-white" />
+                          Pause Reading
+                        </button>
+                      )}
+                      {canSkipReading && (
+                        <button
+                          onClick={skipToExam}
+                          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full text-xs flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all shadow-md shadow-emerald-500/20"
+                        >
+                          Proceed to Test →
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* The Reading Text with dynamic Blur depending on timer activity */}
