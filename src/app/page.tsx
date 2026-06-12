@@ -26,61 +26,60 @@ const COLORS = [
   { name: "indigo", hex: "#6366f1", label: "Indigo" },
 ];
 
-// Session timing — 10 min focused reading + 40 min practice = 50 min total
-const READING_SECONDS = 600; // 10 minutes
-const EXAM_SECONDS = 2400;
-const CHECKPOINT_INTERVAL_SECONDS = 300; // unskippable attention check every 5 min of reading
-const DEMO_READING_SECONDS = 120;
-const DEMO_EXAM_SECONDS = 60;
-const DEMO_CHECKPOINT_INTERVAL = 60;
+// Session modes. Each mode sets the reading/practice durations, how many
+// questions are drawn, how many reading sections are shown, and how often the
+// attention checkpoint fires. Times are in seconds.
+//   quick — a short revision exercise (5 min reading + ~10 min practice)
+//   exam  — a full ZIMSEC-length sitting (10 min reading + 80 min practice = 90 min)
+//   demo  — fast timings for testing/walkthroughs
+type SessionMode = "quick" | "exam" | "demo";
 
-// Per-session rotation — each session draws a fresh subset of questions and
-// study sections; nothing repeats until the whole pool has been used.
-const QUIZ_PER_SESSION = 8;
-const PAPER2_PER_SESSION = 3;
-const READING_SECTIONS_PER_SESSION = 5;
-
-function shuffle<T>(arr: T[]): T[] {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
+interface ModeConfig {
+  label: string;
+  readingSeconds: number;
+  examSeconds: number;
+  checkpointInterval: number;
+  quizCount: number;
+  paper2Count: number;
+  readingSections: number;
+  skipReadingAfter: number; // seconds of reading before "skip ahead" is allowed
 }
 
-function pickRotation<T>(items: T[], count: number, storageKey: string, idOf: (item: T) => string): T[] {
-  if (items.length <= count) return shuffle(items);
-  let seen: string[] = [];
-  try {
-    seen = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
-  } catch {
-    seen = [];
-  }
-  let pool = items.filter((it) => !seen.includes(idOf(it)));
-  if (pool.length < count) {
-    // Pool exhausted — start a new rotation, carrying the leftover unseen items
-    seen = [];
-    const carryIds = pool.map(idOf);
-    const refill = shuffle(items.filter((it) => !carryIds.includes(idOf(it)))).slice(0, count - pool.length);
-    pool = [...pool, ...refill];
-  }
-  const chosen = shuffle(pool).slice(0, count);
-  localStorage.setItem(storageKey, JSON.stringify([...seen, ...chosen.map(idOf)]));
-  return chosen;
-}
+const MODE_CONFIG: Record<SessionMode, ModeConfig> = {
+  quick: {
+    label: "Quick Exercise",
+    readingSeconds: 300, // 5 min
+    examSeconds: 600, // 10 min
+    checkpointInterval: 150,
+    quizCount: 5,
+    paper2Count: 2,
+    readingSections: 3,
+    skipReadingAfter: 120,
+  },
+  exam: {
+    label: "Full 90-min Exam",
+    readingSeconds: 600, // 10 min reading
+    examSeconds: 4800, // 80 min practice → 90 min total
+    checkpointInterval: 300,
+    quizCount: 8,
+    paper2Count: 3,
+    readingSections: 5,
+    skipReadingAfter: 300,
+  },
+  demo: {
+    label: "Demo (fast)",
+    readingSeconds: 120,
+    examSeconds: 60,
+    checkpointInterval: 60,
+    quizCount: 8,
+    paper2Count: 3,
+    readingSections: 5,
+    skipReadingAfter: 60,
+  },
+};
 
-// Rotate the #### sections of a study guide, keeping the ### title block and
-// curriculum order so the reading stays coherent.
-function pickReadingRotation(material: string, storageKey: string): string {
-  const parts = material.split(/\n(?=#### )/);
-  const header = parts[0];
-  const sections = parts.slice(1);
-  if (sections.length <= READING_SECTIONS_PER_SESSION) return material;
-  const chosen = pickRotation(sections, READING_SECTIONS_PER_SESSION, storageKey, (s) => s.slice(0, 40));
-  const ordered = sections.filter((s) => chosen.includes(s));
-  return [header, ...ordered].join("\n");
-}
+// Question/reading rotation now lives in Convex (api.rotation.pick) so it is
+// per-student, timestamped, and avoids repeats for a month. See convex/rotation.ts.
 
 interface ActivityEntry {
   timestamp: string;
@@ -433,11 +432,13 @@ export default function Home() {
     currentBlock, currentBlockIndex,
     questCompleted, tokensJustEarned,
     dismissQuestComplete, recordQuizScore,
+    attempts, recordAttempt, clearAttempts, pickRotation,
   } = useGameState();
 
   const [selectedSubject, setSelectedSubject] = useState<string>("Mathematics");
   const [selectedPaper, setSelectedPaper] = useState<"Paper 1" | "Paper 2">("Paper 1");
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(false); // Default to standard mode
+  const [sessionMode, setSessionMode] = useState<SessionMode>("exam"); // quick | exam | demo
+  const modeCfg = MODE_CONFIG[sessionMode];
 
   const materials = curriculumData[selectedSubject] || curriculumData["Mathematics"];
   const getReadingMaterial = () => {
@@ -480,68 +481,45 @@ export default function Home() {
   const [showDashboard, setShowDashboard] = useState<boolean>(false);
   const [isMobileChatOpen, setIsMobileChatOpen] = useState<boolean>(false);
 
-  const maxReadingSeconds = isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS;
+  const maxReadingSeconds = modeCfg.readingSeconds;
   const elapsedReadingSeconds = maxReadingSeconds - chamberTimer;
-  const canSkipReading = isDemoMode ? (elapsedReadingSeconds >= 60) : (elapsedReadingSeconds >= 300);
+  const canSkipReading = elapsedReadingSeconds >= modeCfg.skipReadingAfter;
 
-  // Parent audit and activity log state
-  const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
+  // Parent audit log — sourced from this student's Convex attempts, mapped to
+  // the ActivityEntry shape so all downstream dashboard/grading code is unchanged.
+  const activityLog: ActivityEntry[] = React.useMemo(
+    () =>
+      (attempts ?? []).map((a) => ({
+        timestamp:
+          new Date(a.createdAt).toLocaleTimeString() +
+          " (" +
+          new Date(a.createdAt).toLocaleDateString() +
+          ")",
+        subject: a.subject,
+        paperType: a.paperType,
+        score: a.score,
+        totalQuestions: a.totalQuestions,
+        percentage: a.percentage,
+        violations: a.violations,
+        passed: a.passed,
+      })),
+    [attempts]
+  );
 
-  useEffect(() => {
-    const savedLog = localStorage.getItem("zimsec_activity_log");
-    if (savedLog) {
-      try {
-        setActivityLog(JSON.parse(savedLog));
-      } catch (e) {
-        console.warn("Failed to load activity log", e);
-      }
-    }
-  }, []);
-
-  const addActivityEntry = (entry: Omit<ActivityEntry, "timestamp">) => {
-    const newEntry: ActivityEntry = {
-      ...entry,
-      timestamp: new Date().toLocaleTimeString() + " (" + new Date().toLocaleDateString() + ")"
-    };
-    const updated = [newEntry, ...activityLog];
-    setActivityLog(updated);
-    localStorage.setItem("zimsec_activity_log", JSON.stringify(updated));
-  };
-
-  // Spaced Repetition Mastery state - tracking by key 'subject:paperType'
-  const [masteredPapers, setMasteredPapers] = useState<Record<string, { dateLearned: string; score: number }>>({});
-
-  useEffect(() => {
-    const saved = localStorage.getItem("zimsec_mastered_papers");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const clean: typeof parsed = {};
-        const todayStr = new Date().toISOString().split("T")[0];
-        
-        Object.keys(parsed).forEach((key) => {
-          if (isSameWeek(parsed[key].dateLearned, todayStr)) {
-            clean[key] = parsed[key];
-          }
-        });
-        setMasteredPapers(clean);
-        localStorage.setItem("zimsec_mastered_papers", JSON.stringify(clean));
-      } catch (e) {
-        console.warn("Failed to load mastered papers", e);
-      }
-    }
-  }, []);
-
-  const markPaperAsMastered = (subject: string, paper: string, score: number) => {
+  // Mastery is derived: a paper counts as mastered if the student passed it this
+  // week. Same `subject:paper -> { dateLearned, score }` shape as before.
+  const masteredPapers: Record<string, { dateLearned: string; score: number }> = React.useMemo(() => {
     const todayStr = new Date().toISOString().split("T")[0];
-    const key = `${subject}:${paper}`;
-    const updated = {
-      ...masteredPapers,
-      [key]: { dateLearned: todayStr, score }
-    };
-    setMasteredPapers(updated);
-    localStorage.setItem("zimsec_mastered_papers", JSON.stringify(updated));
-  };
+    const out: Record<string, { dateLearned: string; score: number }> = {};
+    for (const a of attempts ?? []) {
+      if (!a.passed) continue;
+      const dateLearned = new Date(a.createdAt).toISOString().split("T")[0];
+      if (!isSameWeek(dateLearned, todayStr)) continue;
+      const key = `${a.subject}:${a.paperType}`;
+      if (!out[key]) out[key] = { dateLearned, score: a.score };
+    }
+    return out;
+  }, [attempts]);
 
   // Homework Helper Chat State
   const [chatInput, setChatInput] = useState<string>("");
@@ -743,22 +721,22 @@ export default function Home() {
     setChamberPhase("results");
     setIsTimerRunning(false);
 
-    // Evaluate results and lock in mastery ONLY IF it is a pass (>= 70% and not flagged for cheating)
+    // Record the attempt to this student's Convex history. Mastery is derived
+    // from passed attempts, so there is no separate "mark mastered" step.
     const report = getResults();
-    if (report.passed) {
-      markPaperAsMastered(selectedSubject, selectedPaper, report.score);
+    if (sessionToken) {
+      recordAttempt({
+        token: sessionToken,
+        subject: selectedSubject,
+        paperType: selectedPaper,
+        mode: sessionMode,
+        score: report.score,
+        totalQuestions: report.totalQuestions,
+        percentage: report.percentage,
+        violations,
+        passed: report.passed,
+      });
     }
-
-    // Add to parent activity log
-    addActivityEntry({
-      subject: selectedSubject,
-      paperType: selectedPaper,
-      score: report.score,
-      totalQuestions: report.totalQuestions,
-      percentage: report.percentage,
-      violations: violations,
-      passed: report.passed
-    });
   };
 
   // Calculate stats for Parent Audit
@@ -782,9 +760,8 @@ export default function Home() {
         setChamberTimer((prev) => {
           const next = prev - 1;
           
-          // Unskippable attention checkpoint every 10 minutes of reading
-          const checkpointInterval = isDemoMode ? DEMO_CHECKPOINT_INTERVAL : CHECKPOINT_INTERVAL_SECONDS;
-          if (chamberPhase === "reading" && next > 0 && next % checkpointInterval === 0) {
+          // Unskippable attention checkpoint at the mode's interval during reading
+          if (chamberPhase === "reading" && next > 0 && next % modeCfg.checkpointInterval === 0) {
             triggerCheckpoint();
           }
 
@@ -794,7 +771,7 @@ export default function Home() {
               // Automatically move to exam phase
               setChamberPhase("exam");
               setIsTimerRunning(true);
-              setChamberTimer(isDemoMode ? DEMO_EXAM_SECONDS : EXAM_SECONDS); // 1m demo vs 50m practice
+              setChamberTimer(modeCfg.examSeconds);
             } else if (chamberPhase === "exam") {
               // Automatically finish exam
               gradeExam();
@@ -808,7 +785,7 @@ export default function Home() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isTimerRunning, chamberTimer, chamberPhase, isDemoMode]);
+  }, [isTimerRunning, chamberTimer, chamberPhase, modeCfg]);
 
   const triggerCheckpoint = () => {
     setIsTimerRunning(false);
@@ -836,7 +813,7 @@ export default function Home() {
     }
   };
 
-  const startStudySession = () => {
+  const startStudySession = async () => {
     setViolations(0);
     setShowCheatAlert(false);
     setMouseLeaveWarning(false);
@@ -844,19 +821,52 @@ export default function Home() {
     setPaper1Answers({});
     setPaper2Answers({});
 
-    // Draw this session's questions and study sections from the rotation pool
-    const rotationBase = `zimsec_rotation_${selectedSubject}_${selectedPaper}`;
+    // Draw this session's questions and study sections via the Convex rotation,
+    // which avoids repeats for a month unless the whole pool has been covered.
+    const bucketBase = `${selectedSubject}|${selectedPaper}`;
     if (selectedPaper === "Paper 1") {
-      setSessionQuiz(pickRotation(materials.quiz, QUIZ_PER_SESSION, `${rotationBase}_quiz`, (q) => q.id));
+      const byId = new Map(materials.quiz.map((q) => [q.id, q]));
+      const ids = await pickRotation({
+        token: sessionToken,
+        bucket: `${bucketBase}|quiz`,
+        itemIds: materials.quiz.map((q) => q.id),
+        count: modeCfg.quizCount,
+      });
+      setSessionQuiz((ids ?? []).map((id) => byId.get(id)).filter(Boolean) as Question[]);
       setSessionPaper2([]);
     } else {
-      setSessionPaper2(pickRotation(materials.paper2, PAPER2_PER_SESSION, `${rotationBase}_p2`, (q) => q.id));
+      const byId = new Map(materials.paper2.map((q) => [q.id, q]));
+      const ids = await pickRotation({
+        token: sessionToken,
+        bucket: `${bucketBase}|p2`,
+        itemIds: materials.paper2.map((q) => q.id),
+        count: modeCfg.paper2Count,
+      });
+      setSessionPaper2((ids ?? []).map((id) => byId.get(id)).filter(Boolean) as Paper2Question[]);
       setSessionQuiz([]);
     }
-    setSessionReading(pickReadingRotation(getReadingMaterial(), `${rotationBase}_reading`));
 
-    // Reading phase duration: 2 minutes for demo, 50 minutes for real ZIMSEC Prep
-    setChamberTimer(isDemoMode ? DEMO_READING_SECONDS : READING_SECONDS);
+    // Reading sections: split the guide, rotate the #### sections, reassemble.
+    const fullReading = getReadingMaterial();
+    const parts = fullReading.split(/\n(?=#### )/);
+    const header = parts[0];
+    const sections = parts.slice(1);
+    if (sections.length <= modeCfg.readingSections) {
+      setSessionReading(fullReading);
+    } else {
+      const keyOf = (s: string) => s.slice(0, 40);
+      const chosenKeys = await pickRotation({
+        token: sessionToken,
+        bucket: `${bucketBase}|reading`,
+        itemIds: sections.map(keyOf),
+        count: modeCfg.readingSections,
+      });
+      const chosen = new Set(chosenKeys ?? []);
+      const ordered = sections.filter((s) => chosen.has(keyOf(s)));
+      setSessionReading([header, ...ordered].join("\n"));
+    }
+
+    setChamberTimer(modeCfg.readingSeconds);
     setChamberPhase("reading");
     setIsTimerRunning(false); // Student must click unblur button to start
   };
@@ -865,7 +875,7 @@ export default function Home() {
     setIsTimerRunning(false);
     setChamberPhase("exam");
     setIsTimerRunning(true);
-    setChamberTimer(isDemoMode ? DEMO_EXAM_SECONDS : EXAM_SECONDS);
+    setChamberTimer(modeCfg.examSeconds);
   };
 
   // Go home to the setup room and fully reset the session state
@@ -1209,9 +1219,8 @@ export default function Home() {
               {/* Clear data button */}
               <button
                 onClick={() => {
-                  if (confirm("Are you sure you want to clear the parental history log?")) {
-                    localStorage.removeItem("zimsec_activity_log");
-                    setActivityLog([]);
+                  if (sessionToken && confirm("Are you sure you want to clear the parental history log?")) {
+                    clearAttempts({ token: sessionToken });
                   }
                 }}
                 className="py-2.5 px-4 bg-white/5 border border-white/10 hover:bg-rose-500/10 hover:border-rose-500/20 rounded-lg text-xs font-bold text-rose-400 self-end transition-all cursor-pointer"
@@ -1366,28 +1375,24 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Session Duration</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Session Mode</label>
                       <div className="flex bg-white/5 rounded-lg p-1 border border-white/10">
-                        <button
-                          onClick={() => setIsDemoMode(false)}
-                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                            !isDemoMode
-                              ? "bg-[#0070d1] text-white"
-                              : "text-white/60 hover:text-white"
-                          }`}
-                        >
-                          Exam (90m)
-                        </button>
-                        <button
-                          onClick={() => setIsDemoMode(true)}
-                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                            isDemoMode
-                              ? "bg-[#0070d1] text-white"
-                              : "text-white/60 hover:text-white"
-                          }`}
-                        >
-                          Quick (2m)
-                        </button>
+                        {([
+                          { mode: "quick" as const, label: "Quick", sub: "5 min + 5 Qs" },
+                          { mode: "exam" as const, label: "Full Exam", sub: "90 min" },
+                          { mode: "demo" as const, label: "Demo", sub: "fast test" },
+                        ]).map(({ mode, label, sub }) => (
+                          <button
+                            key={mode}
+                            onClick={() => setSessionMode(mode)}
+                            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex flex-col items-center leading-tight ${
+                              sessionMode === mode ? "bg-[#0070d1] text-white" : "text-white/60 hover:text-white"
+                            }`}
+                          >
+                            <span>{label}</span>
+                            <span className="text-[8px] font-semibold opacity-70 normal-case">{sub}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>

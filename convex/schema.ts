@@ -58,4 +58,27 @@ export default defineSchema({
     count: v.number(),
     resetAt: v.number(),
   }).index("by_key", ["key"]),
+
+  // Per-student practice history (parent audit log + mastery is derived from this)
+  attempts: defineTable({
+    userId: v.id("users"),
+    subject: v.string(),
+    paperType: v.string(),
+    mode: v.string(), // "quick" | "exam" | "demo"
+    score: v.number(),
+    totalQuestions: v.number(),
+    percentage: v.number(),
+    violations: v.number(),
+    passed: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  // Per-student record of when each question / reading section was last shown,
+  // so nothing repeats for a month unless the whole pool has been covered.
+  studyRotation: defineTable({
+    userId: v.id("users"),
+    bucket: v.string(), // e.g. "Mathematics|Paper 1|quiz"
+    itemId: v.string(), // question id or reading-section key
+    shownAt: v.number(),
+  }).index("by_user_bucket", ["userId", "bucket"]),
 });

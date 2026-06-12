@@ -57,6 +57,9 @@ export function useGameState() {
   const convexCompleteQuest = useMutation(api.quests.completeQuest);
   const convexCreateQuest = useMutation(api.quests.createQuest);
   const convexRecordViolation = useMutation(api.quests.recordFocusViolation);
+  const convexRecordAttempt = useMutation(api.attempts.record);
+  const convexClearAttempts = useMutation(api.attempts.clear);
+  const convexPickRotation = useMutation(api.rotation.pick);
 
   // Stable refs so timer effect doesn't re-register on mutation reference changes
   const completeQuestRef = useRef(convexCompleteQuest);
@@ -67,6 +70,12 @@ export function useGameState() {
   // ── Real-time session query (skips when no token) ────────────────────────
   const sessionData = useQuery(
     api.users.getSession,
+    sessionToken ? { token: sessionToken } : "skip"
+  );
+
+  // ── Per-student practice history (skips when no token) ───────────────────
+  const attemptsData = useQuery(
+    api.attempts.list,
     sessionToken ? { token: sessionToken } : "skip"
   );
 
@@ -367,6 +376,11 @@ export function useGameState() {
     recordQuizScore,
     // Convex helpers for page
     convexCreateQuest,
+    // Per-student practice history
+    attempts: attemptsData ?? [],
+    recordAttempt: convexRecordAttempt,
+    clearAttempts: convexClearAttempts,
+    pickRotation: convexPickRotation,
     TODAY,
   };
 }

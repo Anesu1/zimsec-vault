@@ -1020,10 +1020,10 @@ Possible reasons historians give:
       },
       {
         id: "ss2",
-        question: "Who was the leader of the Ndebele state during the First Chimurenga?",
+        question: "Who was the last king of the Ndebele state, ruling when the BSAC colonised Mashonaland in 1890?",
         options: ["A. King Shaka", "B. King Lobengula", "C. King Mzilikazi", "D. Emperor Mutota"],
         answer: "B",
-        explanation: "King Lobengula was the ruler of the Ndebele during the First Chimurenga resistance in the late 1890s."
+        explanation: "King Lobengula was the last Ndebele king (son of Mzilikazi). He ruled during colonisation in 1890 and died in 1894 — the 1896 First Chimurenga was then led by spirit mediums like Mbuya Nehanda."
       },
       {
         id: "ss3",

@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as attempts from "../attempts.js";
 import type * as materials from "../materials.js";
 import type * as quests from "../quests.js";
 import type * as rateLimit from "../rateLimit.js";
+import type * as rotation from "../rotation.js";
 import type * as users from "../users.js";
 
 import type {
@@ -20,9 +22,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  attempts: typeof attempts;
   materials: typeof materials;
   quests: typeof quests;
   rateLimit: typeof rateLimit;
+  rotation: typeof rotation;
   users: typeof users;
 }>;
 
