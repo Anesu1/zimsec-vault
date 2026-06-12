@@ -31,8 +31,7 @@ const COLORS = [
 // attention checkpoint fires. Times are in seconds.
 //   quick — a short revision exercise (5 min reading + ~10 min practice)
 //   exam  — a full ZIMSEC-length sitting (10 min reading + 80 min practice = 90 min)
-//   demo  — fast timings for testing/walkthroughs
-type SessionMode = "quick" | "exam" | "demo";
+type SessionMode = "quick" | "exam";
 
 interface ModeConfig {
   label: string;
@@ -65,16 +64,6 @@ const MODE_CONFIG: Record<SessionMode, ModeConfig> = {
     paper2Count: 3,
     readingSections: 5,
     skipReadingAfter: 300,
-  },
-  demo: {
-    label: "Demo (fast)",
-    readingSeconds: 120,
-    examSeconds: 60,
-    checkpointInterval: 60,
-    quizCount: 8,
-    paper2Count: 3,
-    readingSections: 5,
-    skipReadingAfter: 60,
   },
 };
 
@@ -437,7 +426,7 @@ export default function Home() {
 
   const [selectedSubject, setSelectedSubject] = useState<string>("Mathematics");
   const [selectedPaper, setSelectedPaper] = useState<"Paper 1" | "Paper 2">("Paper 1");
-  const [sessionMode, setSessionMode] = useState<SessionMode>("exam"); // quick | exam | demo
+  const [sessionMode, setSessionMode] = useState<SessionMode>("exam"); // quick | exam
   const modeCfg = MODE_CONFIG[sessionMode];
 
   const materials = curriculumData[selectedSubject] || curriculumData["Mathematics"];
@@ -1380,7 +1369,6 @@ export default function Home() {
                         {([
                           { mode: "quick" as const, label: "Quick", sub: "5 min + 5 Qs" },
                           { mode: "exam" as const, label: "Full Exam", sub: "90 min" },
-                          { mode: "demo" as const, label: "Demo", sub: "fast test" },
                         ]).map(({ mode, label, sub }) => (
                           <button
                             key={mode}

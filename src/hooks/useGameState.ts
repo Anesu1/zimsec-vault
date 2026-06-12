@@ -370,7 +370,6 @@ export function useGameState() {
     pauseTimer,
     skipBlock,
     dismissQuestComplete,
-    changeMockDay: configureBlocksForDay,
     setQuestId,
     recordCheckpointPassed,
     recordQuizScore,
